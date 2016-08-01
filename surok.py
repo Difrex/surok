@@ -4,11 +4,14 @@ from time import sleep
 from os import listdir
 from os.path import isfile, join 
 import json
+from surok.templates import gen
+from surok.discovery import resolve
 
 # Load base configurations
 f = open('conf/surok.json', 'r')
 conf = json.loads(f.read())
 print(conf)
+f.close()
 
 
 # Get app configurations 
@@ -17,10 +20,24 @@ def get_configs():
     return confs
 
 
+# Get Surok App configuration
+def load_app_conf(app):
+    f = open(conf['confd'] + '/' + app)
+    c = json.loads(f.read())
+    f.close()
+
+    return c
+
+
 # Main loop
 while 1:
     confs = get_configs()
-    for i in confs:
-        print(i)
+
+    for app in confs:
+        app_conf = load_app_conf(app)
+        app_hosts = resolve(app_conf, conf)
+        print(app_hosts)
+
+#    gen()
     sleep(5)
 
