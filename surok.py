@@ -39,8 +39,8 @@ while 1:
         my = {'app': app_conf['name'], 'hosts': app_hosts}
         service_conf = gen(my, app_conf['template'])
 
-        reload_conf(service_conf, app_conf)
+        print(reload_conf(service_conf, app_conf))
 
 
-    sleep(5)
+    sleep(conf['wait_time'])
 
