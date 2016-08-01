@@ -6,6 +6,7 @@ from os.path import isfile, join
 import json
 from surok.templates import gen
 from surok.discovery import resolve
+from surok.system import reload_conf
 
 # Load base configurations
 f = open('conf/surok.json', 'r')
@@ -32,12 +33,14 @@ def load_app_conf(app):
 # Main loop
 while 1:
     confs = get_configs()
-
     for app in confs:
         app_conf = load_app_conf(app)
         app_hosts = resolve(app_conf, conf)
-        print(app_hosts)
+        my = {'app': app_conf['name'], 'hosts': app_hosts}
+        service_conf = gen(my, app_conf['template'])
 
-#    gen()
+        reload_conf(service_conf, app_conf)
+
+
     sleep(5)
 
