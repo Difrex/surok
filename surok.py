@@ -9,7 +9,7 @@ from surok.discovery import resolve
 from surok.system import reload_conf
 
 # Load base configurations
-f = open('conf/surok.json', 'r')
+f = open('/etc/surok/conf/surok.json', 'r')
 conf = json.loads(f.read())
 print(conf)
 f.close()
