@@ -1,0 +1,12 @@
+Source: surok
+Section: admin
+Priority: optional
+Maintainer: Denis Zheleztsov <difrex@bingo-boom.ru>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Vcs-Git: http://vcs.bingo-boom.ru/difrex/surok.git
+
+Package: surok
+Architecture: all
+Depends: python3-jinja2, python3-dnsq
+Description: Service discovery for Apache Mesos clusters

@@ -1,0 +1,6 @@
+conf/surok.json etc/surok/conf
+surok/templates.py usr/lib/python3/dist-packages/surok
+surok/system.py usr/lib/python3/dist-packages/surok
+surok/__init__.py usr/lib/python3/dist-packages/surok
+surok/discovery.py usr/lib/python3/dist-packages/surok
+surok.py usr/bin
