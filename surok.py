@@ -9,7 +9,7 @@ from surok.discovery import resolve
 from surok.system import reload_conf
 
 # Load base configurations
-f = open('/etc/surok/conf/surok.json', 'r')
+f = open('conf/surok.json', 'r')
 conf = json.loads(f.read())
 print(conf)
 f.close()
@@ -36,7 +36,7 @@ while 1:
     for app in confs:
         app_conf = load_app_conf(app)
         app_hosts = resolve(app_conf, conf)
-        my = {'app': app_conf['name'], 'hosts': app_hosts}
+        my = { 'hosts': app_hosts }
         service_conf = gen(my, app_conf['template'])
 
         print(reload_conf(service_conf, app_conf))

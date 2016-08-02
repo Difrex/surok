@@ -1,1 +1,12 @@
-{}
+{
+    "services": [
+      {
+        "name": "kioskservice",
+        "group": "production.romania"
+      }
+    ],
+    "conf_name": "test",
+    "template": "templates/nginx_proxy.jj2",
+    "dest": "emailsender",
+    "reload_cmd": "/bin/echo reload nginx"
+}
