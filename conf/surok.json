@@ -1,5 +1,5 @@
 {
-    "marathon": "10.0.1.199:8080",
+    "marathon": "TODO",
     "confd": "conf.d",
     "domain": "marathon.mesos",
     "wait_time": 20,

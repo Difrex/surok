@@ -1,0 +1,12 @@
+{
+    "services": [
+      {
+        "name": "",
+        "group": "mesos"
+      }
+    ],
+    "conf_name": "selfcheck",
+    "template": "templates/selfcheck.jj2",
+    "dest": "selfcheck",
+    "reload_cmd": "/bin/echo selfcheck ok"
+}
