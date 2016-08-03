@@ -36,7 +36,7 @@ while 1:
     for app in confs:
         app_conf = load_app_conf(app)
         app_hosts = resolve(app_conf, conf)
-        my = { 'hosts': app_hosts }
+        my = { 'services': app_hosts }
         service_conf = gen(my, app_conf['template'])
 
         print(reload_conf(service_conf, app_conf))
