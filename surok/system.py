@@ -25,20 +25,30 @@ def write_lock(name, service_conf):
     f.close()
 
 
-def reload_conf(service_conf, app_conf):
+def do_reload(service_conf, app_conf):
+    print( 'Write new configuration of ' + app_conf['conf_name'] )
+
+    f = open(app_conf['dest'], 'w')
+    f.write(service_conf)
+    f.close()
+
+    write_lock(app_conf['conf_name'], service_conf)
+
+    # Reload conf
+    stdout = os.popen(app_conf['reload_cmd']).read()
+    return stdout
+
+
+def reload_conf(service_conf, app_conf, first):
     
-    # Check old config
+    # Check first loop
+    if first == True:
+        stdout = do_reload(service_conf, app_conf)
+        first = False
+        return stdout, first
+
     if get_old(app_conf['conf_name'], service_conf) != 1:
-        print('Write new configuration')
-
-        f = open(app_conf['dest'], 'w')
-        f.write(service_conf)
-        f.close()
-
-        write_lock(app_conf['conf_name'], service_conf)
-
-        # Reload conf
-        stdout = os.popen(app_conf['reload_cmd']).read()
-        return stdout
+        stdout = do_reload(service_conf, app_conf)
+        return stdout, first
     else:
-        return 'Same config. Skip reload'
+        return 'Same config ' + app_conf['conf_name'] + ' Skip reload', first

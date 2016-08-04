@@ -42,6 +42,7 @@ def load_app_conf(app):
 
 
 # Main loop
+first = True
 while 1:
     confs = get_configs()
     for app in confs:
@@ -55,7 +56,8 @@ while 1:
 
         service_conf = gen(my, app_conf['template'])
 
-        print( reload_conf(service_conf, app_conf) )
+        stdout, first =  reload_conf(service_conf, app_conf, first)
+        print(stdout)
 
 
     sleep( conf['wait_time'] )
