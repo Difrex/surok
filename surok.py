@@ -52,7 +52,9 @@ while 1:
         app_hosts = resolve(app_conf, conf)
 
         # Populate my dictionary
-        my = { "services": app_hosts }
+        my = { "services": app_hosts,
+               "conf_name": app_conf['conf_name']
+        }
 
         service_conf = gen(my, app_conf['template'])
 

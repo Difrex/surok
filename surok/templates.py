@@ -9,6 +9,7 @@ def gen(my, jj2):
     f.close()
 
     template = Template(temp)
+    os.environ['APP_NAME'] = my['conf_name']
     my['env'] = os.environ
 
     return template.render(my=my)
