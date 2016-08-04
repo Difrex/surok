@@ -1,0 +1,11 @@
+    {% for host in my['hosts'] %}
+    server {{host['kioskservice']['name']}}:{{host['kioskservice']['port']}};
+    {% endfor %}
+
+server {
+    listen 0.0.0.0:80;
+    server_name _;
+
+    location / {
+    }
+}

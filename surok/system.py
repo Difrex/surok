@@ -28,14 +28,14 @@ def write_lock(name, service_conf):
 def reload_conf(service_conf, app_conf):
     
     # Check old config
-    if get_old(app_conf['name'], service_conf) != 1:
+    if get_old(app_conf['conf_name'], service_conf) != 1:
         print('Write new configuration')
 
         f = open(app_conf['dest'], 'w')
         f.write(service_conf)
         f.close()
 
-        write_lock(app_conf['name'], service_conf)
+        write_lock(app_conf['conf_name'], service_conf)
 
         # Reload conf
         stdout = os.popen(app_conf['reload_cmd']).read()
