@@ -8,8 +8,18 @@ from surok.templates import gen
 from surok.discovery import resolve
 from surok.system import reload_conf
 
+
 # Load base configurations
-f = open('conf/surok.json', 'r')
+surok_conf = '/etc/surok/conf/surok.json'
+
+# Command line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', '--config')
+args = parser.parse_args()
+if args.config:
+        surok_conf = args.config
+
+f = open(surok_conf, 'r')
 conf = json.loads(f.read())
 print(conf)
 f.close()
