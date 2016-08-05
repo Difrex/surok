@@ -20,19 +20,22 @@ args = parser.parse_args()
 if args.config:
         surok_conf = args.config
 
+# Read config file
 f = open(surok_conf, 'r')
 conf = json.loads(f.read())
 print(conf)
 f.close()
 
 
-# Get app configurations 
+# Get app configurations
+# Return list of patches to app discovery configuration
 def get_configs():
     confs = [f for f in listdir(conf['confd']) if isfile( join(conf['confd'], f) )]
     return confs
 
 
 # Get Surok App configuration
+# Read app conf from file and return dict
 def load_app_conf(app):
     f = open( conf['confd'] + '/' + app )
     c = json.loads( f.read() )
@@ -42,6 +45,11 @@ def load_app_conf(app):
 
 
 # Main loop
+###########
+
+# Bad hack for detect first run
+# On host system set it to False
+# TODO: put it to config
 first = True
 while 1:
     confs = get_configs()
@@ -55,7 +63,8 @@ while 1:
         my = { "services": app_hosts,
                "conf_name": app_conf['conf_name']
         }
-
+	
+	# Generate config from template
         service_conf = gen(my, app_conf['template'])
 
         stdout, first =  reload_conf(service_conf, app_conf, first)
