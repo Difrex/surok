@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from time import sleep
+import os
 from os import listdir
 from os.path import isfile, join
 import json
@@ -38,9 +39,12 @@ def get_configs():
 # Get Surok App configuration
 # Read app conf from file and return dict
 def load_app_conf(app):
+    # Load OS environment to app_conf
     f = open(conf['confd'] + '/' + app)
     c = json.loads(f.read())
     f.close()
+
+    c['env'] = os.environ
 
     return c
 
