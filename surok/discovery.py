@@ -7,12 +7,17 @@ def resolve(app, conf):
     hosts = {}
     services = app['services']
     domain = conf['domain']
+    group = None
     for service in services:
         hosts[service['name']] = []
+        if app['env'].get('SUROK_GROUP') is not None:
+            group = app['env']['SUROK_GROUP']
+        else:
+            group = service['group']
         try:
             for rdata in dns.resolver.query('_' +
                                             service['name'] + '.' +
-                                            service['group'] + '._tcp.' +
+                                            group + '._tcp.' +
                                             domain, 'SRV'):
                 info = str(rdata).split()
                 server = {'name': info[3], 'port': info[2]}
@@ -21,6 +26,6 @@ def resolve(app, conf):
         except Exception as e:
             print(str(e) + ": Could not resolve " +
                   service['name'] + '.' +
-                  service['group'] + '._tcp.' + domain)
+                  group + '._tcp.' + domain)
 
     return hosts
