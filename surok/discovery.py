@@ -8,12 +8,18 @@ def resolve(app, conf):
     services = app['services']
     domain = conf['domain']
     group = None
+
+    if app['env'].get('SUROK_DISCOVERY_GROUP') is not None:
+        group = app['env']['SUROK_DISCOVERY_GROUP']
+
     for service in services:
         hosts[service['name']] = []
-        if app['env'].get('SUROK_GROUP') is not None:
-            group = app['env']['SUROK_GROUP']
+
+        if group is not None:
+            pass
         else:
             group = service['group']
+
         try:
             for rdata in dns.resolver.query('_' +
                                             service['name'] + '.' +
