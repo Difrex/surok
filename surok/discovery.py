@@ -15,9 +15,12 @@ def resolve(app, conf):
     for service in services:
         hosts[service['name']] = []
 
+        # Check group configuration
         if group is not None:
             pass
         else:
+            # Load group from service config
+            # /etc/surok/conf.d/service_conf.json
             group = service['group']
 
         try:
