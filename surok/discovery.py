@@ -25,18 +25,25 @@ def resolve(app, conf):
             # /etc/surok/conf.d/service_conf.json
             group = service['group']
 
-        try:
-            fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
-            query = dns.resolver.query(fqdn, 'SRV')
-            query.lifetime = 1.0
-
-            for rdata in query:
-                info = str(rdata).split()
-                server = {'name': info[3], 'port': info[2]}
-                hosts[service['name']].append(server)
-        except DNSException:
-            print("Could not resolve " +
-                  service['name'] + '.' +
-                  group + '._tcp.' + domain)
+        fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
+        hosts[service['name']] = do_query(fqdn)
 
     return hosts
+
+
+# Do SRV queries
+# Return array: [{"name": "f.q.d.n", "port": 8876}]
+def do_query(fqdn):
+    servers = []
+    try:
+        query = dns.resolver.query(fqdn, 'SRV')
+        query.lifetime = 1.0
+
+        for rdata in query:
+            info = str(rdata).split()
+            server = {'name': info[3], 'port': info[2]}
+            servers.append(server)
+    except DNSException:
+        print("Could not resolve " + fqdn)
+
+    return servers
