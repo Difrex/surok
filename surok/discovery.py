@@ -1,8 +1,10 @@
 import dns.resolver
+import dns.query
+from dns.exception import DNSException
 
 
 # Resolve service from mesos-dns SRV record
-# return dict {"servicename": [{"name": "service.f.q.d.n", "port": 9999}]}
+# return dict {"servicename": [{"name": "service.f.q.d.n.", "port": 9999}]}
 def resolve(app, conf):
     hosts = {}
     services = app['services']
@@ -24,16 +26,16 @@ def resolve(app, conf):
             group = service['group']
 
         try:
-            for rdata in dns.resolver.query('_' +
-                                            service['name'] + '.' +
-                                            group + '._tcp.' +
-                                            domain, 'SRV'):
+            fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
+            query = dns.resolver.query(fqdn, 'SRV')
+            query.lifetime = 1.0
+
+            for rdata in query:
                 info = str(rdata).split()
                 server = {'name': info[3], 'port': info[2]}
-
                 hosts[service['name']].append(server)
-        except Exception as e:
-            print(str(e) + ": Could not resolve " +
+        except DNSException:
+            print("Could not resolve " +
                   service['name'] + '.' +
                   group + '._tcp.' + domain)
 
