@@ -1,3 +1,9 @@
+surok (0.3.2) testing; urgency=medium
+
+  * Remove ending '.' in hostname. (for those fucking libs that knows nothing about RFC) 
+
+ -- Denis Ryabyy <vv1r0x@gmail.com>  Fri, 12 Aug 2016 10:48:12 +0300
+
 surok (0.1-1) testing; urgency=low
 
   * Initial release (Closes: BBONL-1696)
