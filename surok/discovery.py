@@ -41,7 +41,7 @@ def do_query(fqdn):
 
         for rdata in query:
             info = str(rdata).split()
-            server = {'name': info[3], 'port': info[2]}
+            server = {'name': info[3][:-1], 'port': info[2]}
             servers.append(server)
     except DNSException:
         print("Could not resolve " + fqdn)
