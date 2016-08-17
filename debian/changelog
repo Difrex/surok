@@ -1,8 +1,9 @@
-surok (0.5) UNRELEASED; urgency=medium
+surok (0.5.1) UNRELEASED; urgency=medium
 
-  * Port naming initial. Only one port for one service
+  * Port naming initial
+  * Multiports support
 
- -- Denis Zheleztsov <difrex@bingo-boom.ru>  Wed, 17 Aug 2016 16:39:17 +0300
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Wed, 17 Aug 2016 16:50:58 +0300
 
 surok (0.3.2) testing; urgency=medium
 
