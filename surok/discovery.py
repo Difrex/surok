@@ -17,7 +17,7 @@ def resolve(app, conf):
         group = app['env']['SUROK_DISCOVERY_GROUP']
 
     for service in services:
-        hosts[service['name']] = []
+        hosts[service['name']] = {}
 
         # Check group configuration
         if group is not None:
@@ -40,7 +40,7 @@ def resolve(app, conf):
         if ports is not None:
             for port_name in ports:
                 fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain
-                hosts[service['name']]['ports'][port_name] = do_query(fqdn, conf['loglevel'])
+                hosts[service['name']][port_name] = do_query(fqdn, conf['loglevel'])
         else:
             fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
             hosts[service['name']] = do_query(fqdn, conf['loglevel'])
