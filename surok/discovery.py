@@ -12,6 +12,7 @@ def resolve(app, conf):
     domain = conf['domain']
     group = None
 
+    # Groups hack
     if app['env'].get('SUROK_DISCOVERY_GROUP') is not None:
         group = app['env']['SUROK_DISCOVERY_GROUP']
 
@@ -26,7 +27,21 @@ def resolve(app, conf):
             # /etc/surok/conf.d/service_conf.json
             group = service['group']
 
-        fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
+        # Port name from app config
+        port_name = None
+        try:
+            port_name = service['port_name']
+        except:
+            pass
+
+        # This is fast fix for port naming
+        # Will be rewrite later
+        fqdn = ''
+        if port_name is not None:
+            fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain
+        else:
+            fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
+
         hosts[service['name']] = do_query(fqdn, conf['loglevel'])
 
     return hosts
