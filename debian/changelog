@@ -1,3 +1,9 @@
+surok (0.5) UNRELEASED; urgency=medium
+
+  * Port naming initial. Only one port for one service
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Wed, 17 Aug 2016 16:39:17 +0300
+
 surok (0.3.2) testing; urgency=medium
 
   * Remove ending '.' in hostname. (for those fucking libs that knows nothing about RFC) 
