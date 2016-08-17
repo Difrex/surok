@@ -1,6 +1,7 @@
 import dns.resolver
 import dns.query
 from dns.exception import DNSException
+import logging
 
 
 # Resolve service from mesos-dns SRV record
@@ -26,14 +27,14 @@ def resolve(app, conf):
             group = service['group']
 
         fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
-        hosts[service['name']] = do_query(fqdn)
+        hosts[service['name']] = do_query(fqdn, conf['loglevel'])
 
     return hosts
 
 
 # Do SRV queries
 # Return array: [{"name": "f.q.d.n", "port": 8876}]
-def do_query(fqdn):
+def do_query(fqdn, loglevel):
     servers = []
     try:
         query = dns.resolver.query(fqdn, 'SRV')
@@ -44,6 +45,7 @@ def do_query(fqdn):
             server = {'name': info[3][:-1], 'port': info[2]}
             servers.append(server)
     except DNSException:
-        print("Could not resolve " + fqdn)
+        if loglevel != 'info':
+            logging.warning("Could not resolve " + fqdn)
 
     return servers

@@ -1,8 +1,8 @@
-from jinja2 import Environment, PackageLoader, Template
+from jinja2 import Template
 import os
 
 
-# Return rendered configuration 
+# Return rendered configuration
 def gen(my, jj2):
     f = open(jj2, 'r')
     temp = f.read()

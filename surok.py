@@ -24,7 +24,6 @@ if args.config:
 # Read config file
 f = open(surok_conf, 'r')
 conf = json.loads(f.read())
-print(conf)
 f.close()
 
 
@@ -61,6 +60,13 @@ while 1:
     for app in confs:
         app_conf = load_app_conf(app)
 
+        # Will be removed later
+        # For old configs
+        try:
+            loglevel = conf['loglevel']
+        except:
+            conf['loglevel'] = 'info'
+
         # Resolve services
         app_hosts = resolve(app_conf, conf)
 
@@ -71,7 +77,6 @@ while 1:
         # Generate config from template
         service_conf = gen(my, app_conf['template'])
 
-        stdout, first = reload_conf(service_conf, app_conf, first)
-        print(stdout)
+        first = reload_conf(service_conf, app_conf, first, conf)
 
     sleep(conf['wait_time'])
