@@ -1,9 +1,8 @@
-surok (0.5.1) UNRELEASED; urgency=medium
+surok (0.5.2) UNRELEASED; urgency=medium
 
-  * Port naming initial
-  * Multiports support
+  * Fix ports discovery
 
- -- Denis Zheleztsov <difrex@bingo-boom.ru>  Wed, 17 Aug 2016 16:50:58 +0300
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Wed, 17 Aug 2016 17:17:18 +0300
 
 surok (0.3.2) testing; urgency=medium
 
