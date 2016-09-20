@@ -1,6 +1,6 @@
 {
     "marathon": "TODO",
-    "confd": "conf.d",
+    "confd": "/etc/surok/conf.d",
     "domain": "marathon.mesos",
     "wait_time": 20,
     "lock_dir": "/var/tmp",
