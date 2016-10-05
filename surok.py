@@ -68,15 +68,16 @@ while 1:
             conf['loglevel'] = 'info'
 
         # Resolve services
-        app_hosts = resolve(app_conf, conf)
+        if resolve(app_conf, conf) != 404:
+            app_hosts = resolve(app_conf, conf)
 
-        # Populate my dictionary
-        my = {"services": app_hosts,
-              "conf_name": app_conf['conf_name']}
+            # Populate my dictionary
+            my = {"services": app_hosts,
+                  "conf_name": app_conf['conf_name']}
 
-        # Generate config from template
-        service_conf = gen(my, app_conf['template'])
+            # Generate config from template
+            service_conf = gen(my, app_conf['template'])
 
-        first = reload_conf(service_conf, app_conf, first, conf)
+            first = reload_conf(service_conf, app_conf, first, conf)
 
     sleep(conf['wait_time'])
