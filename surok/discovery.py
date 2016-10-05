@@ -82,9 +82,9 @@ def do_query(fqdn, loglevel):
             info = str(rdata).split()
             server = {'name': info[3][:-1], 'port': info[2]}
             servers.append(server)
-    except DNSException:
+    except DNSException as e:
         if loglevel != 'info':
-            logging.error("Could not resolve " + fqdn)
+            logging.error("Could not resolve " + fqdn + ': ' + str(e))
             return {"state": 404}
 
     return servers
