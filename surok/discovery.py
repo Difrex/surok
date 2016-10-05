@@ -4,6 +4,11 @@ from dns.exception import DNSException
 import logging
 
 
+# Configure logging
+FORMAT = '%(asctime) %(message)s'
+logging.basicConfig(format=FORMAT)
+logger = logging.getLogger('discovery')
+
 # Resolve service from mesos-dns SRV record
 # return dict {"servicename": [{"name": "service.f.q.d.n.", "port": 9999}]}
 def resolve(app, conf):
@@ -84,7 +89,7 @@ def do_query(fqdn, loglevel):
             servers.append(server)
     except DNSException as e:
         if loglevel != 'info':
-            logging.error("Could not resolve " + fqdn + ': ' + str(e))
+            logger.error("Could not resolve " + fqdn + ': ' + str(e))
             return {"state": 404}
 
     return servers
