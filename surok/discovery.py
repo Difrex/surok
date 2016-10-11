@@ -65,3 +65,9 @@ def do_query(fqdn, loglevel):
             logging.warning("Could not resolve " + fqdn)
 
     return servers
+
+
+# Groups switch
+# Priority: config, environment, marathon environment
+def get_group(conf):
+    pass
