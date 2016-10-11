@@ -93,3 +93,9 @@ def do_query(fqdn, loglevel):
             return {"state": 404}
 
     return servers
+
+
+# Groups switch
+# Priority: config, environment, marathon environment
+def get_group(conf):
+    pass
