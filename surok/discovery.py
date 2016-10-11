@@ -45,30 +45,8 @@ def resolve(app, conf):
         if ports is not None:
             for port_name in ports:
                 fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain
-
-                # Fast fix of empty query result
-                # ------------------------------
-                try:
-                    do_query_test = do_query(fqdn, conf['loglevel'])
-                    if do_query_test['state'] == 404:
-                        return 404
-                except:
-                    pass
-                # ------------------------------
-
                 hosts[service['name']][port_name] = do_query(fqdn, conf['loglevel'])
-        else:
-
-            # Fast fix of empty query result
-            # ------------------------------
-            try:
-                do_query_test = do_query(fqdn, conf['loglevel'])
-                if do_query_test['state'] == 404:
-                    return 404
-            except:
-                pass
-            # ------------------------------
-            
+        else:          
             fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
             hosts[service['name']] = do_query(fqdn, conf['loglevel'])
 
