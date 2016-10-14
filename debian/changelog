@@ -1,3 +1,15 @@
+surok (0.7-3) jessie; urgency=medium
+
+  * Small fix in marathon restart
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Fri, 14 Oct 2016 12:41:31 +0300
+
+surok (0.7-2) testing; urgency=medium
+
+  * Fixed sys module
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Fri, 14 Oct 2016 11:53:45 +0300
+
 surok (0.7-1) testing; urgency=medium
 
   * New dependencies
