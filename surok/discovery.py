@@ -69,7 +69,6 @@ def do_query(fqdn, loglevel):
     except DNSException as e:
         if loglevel != 'info':
             logger.error("Could not resolve " + fqdn + ': ' + str(e))
-            return {"state": 404}
 
     return servers
 
