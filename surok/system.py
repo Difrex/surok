@@ -84,5 +84,5 @@ def restart_self_in_marathon(marathon):
     if marathon['force'] is True:
         r = requests.post(uri, data = {'force': 'true'})
     else:
-        r = requests.post(uri, data = {})
+        r = requests.post(uri, data = {'force': 'false'})
     
