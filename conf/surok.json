@@ -1,7 +1,8 @@
 {
     "marathon": {
 				"force": true,
-				"host": "marathon.mesos:8080"
+				"host": "http://marathon.mesos:8080",
+				"enabled": true
 		},
     "confd": "/etc/surok/conf.d",
     "domain": "marathon.mesos",

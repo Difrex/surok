@@ -1,5 +1,6 @@
 import os
 import logging
+import requests
 
 
 # Get old configuration
@@ -50,6 +51,10 @@ def reload_conf(service_conf, app_conf, first, conf):
         logging.info(stdout)
         return first
 
+    # Check marathon enabled in configuration
+    if conf['marathon']['enabled'] is True:
+        restart_self_in_marathon(conf['marathon'])
+        
     if get_old(app_conf['conf_name'], service_conf) != 1:
         stdout = do_reload(service_conf, app_conf)
         logging.info(stdout)
@@ -60,3 +65,23 @@ def reload_conf(service_conf, app_conf, first, conf):
                           app_conf['conf_name'] +
                           ' Skip reload')
         return first
+
+
+# Do POST request to marathon API
+# /v2/apps//app/name/restart
+def restart_self_in_marathon(marathon):
+    host = marathon['host']
+
+    # Check MARATHON_APP_ID environment varible
+    if os.environ.get('MARATHON_APP_ID') is not True:
+        logging.error('Cannot find MARATHON_APP_ID. Not in Mesos?')
+        sys.exit(2)
+    app_id = os.environ['MARATHON_APP_ID']
+    uri = 'http://' + host + '/v2/apps/' + app_id + '/restart'
+
+    # Ok. In this step we made restart request to Marathon
+    if marathon['force'] is True:
+        r = requests.post(uri, data = {'force': 'true'})
+    else:
+        r = requests.post(uri, data = {})
+    

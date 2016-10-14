@@ -92,6 +92,7 @@ def get_group(service, app):
 
 
 # Parse MARATHON_APP_ID
+# Return marathon.group
 def parse_marathon_app_id(marathon_app_id):
     marathon_app_id = marathon_app_id.split('/')
     group = ''
