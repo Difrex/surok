@@ -1,5 +1,8 @@
 {
-    "marathon": "TODO",
+    "marathon": {
+				"force": true,
+				"host": "marathon.mesos:8080"
+		},
     "confd": "/etc/surok/conf.d",
     "domain": "marathon.mesos",
     "wait_time": 20,
