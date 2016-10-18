@@ -1,3 +1,43 @@
+surok (0.7-3) jessie; urgency=medium
+
+  * Small fix in marathon restart
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Fri, 14 Oct 2016 12:41:31 +0300
+
+surok (0.7-2) testing; urgency=medium
+
+  * Fixed sys module
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Fri, 14 Oct 2016 11:53:45 +0300
+
+surok (0.7-1) testing; urgency=medium
+
+  * New dependencies
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Fri, 14 Oct 2016 11:39:36 +0300
+
+surok (0.7) testing; urgency=medium
+
+  * Marathon restart implementation
+  * WARNING: BROKEN BACKWARD COMPATIBILY WITH OLD MAIN CONFIG
+    !!! Please update your config first !!!
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Fri, 14 Oct 2016 11:28:07 +0300
+
+surok (0.5.5) testing; urgency=medium
+
+  * #closes SD-10
+  * Group switch
+  * Version bump
+
+ -- Denis Zheleztsov <difrex@bingo-boom.ru>  Tue, 11 Oct 2016 15:14:44 +0300
+
+surok (0.3.2) testing; urgency=medium
+
+  * Remove ending '.' in hostname. (for those fucking libs that knows nothing about RFC) 
+
+ -- Denis Ryabyy <vv1r0x@gmail.com>  Fri, 12 Aug 2016 10:48:12 +0300
+
 surok (0.1-1) testing; urgency=low
 
   * Initial release (Closes: BBONL-1696)

@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 from time import sleep
+import os
 from os import listdir
-from os.path import isfile, join 
+from os.path import isfile, join
 import json
 from surok.templates import gen
 from surok.discovery import resolve
@@ -23,23 +24,26 @@ if args.config:
 # Read config file
 f = open(surok_conf, 'r')
 conf = json.loads(f.read())
-print(conf)
 f.close()
 
 
 # Get app configurations
 # Return list of patches to app discovery configuration
 def get_configs():
-    confs = [f for f in listdir(conf['confd']) if isfile( join(conf['confd'], f) )]
+    confs = [f for f in listdir(conf['confd']) if isfile(
+        join(conf['confd'], f))]
     return confs
 
 
 # Get Surok App configuration
 # Read app conf from file and return dict
 def load_app_conf(app):
-    f = open( conf['confd'] + '/' + app )
-    c = json.loads( f.read() )
+    # Load OS environment to app_conf
+    f = open(conf['confd'] + '/' + app)
+    c = json.loads(f.read())
     f.close()
+
+    c['env'] = os.environ
 
     return c
 
@@ -56,20 +60,23 @@ while 1:
     for app in confs:
         app_conf = load_app_conf(app)
 
-        # Resolve services 
+        # Will be removed later
+        # For old configs
+        try:
+            loglevel = conf['loglevel']
+        except:
+            conf['loglevel'] = 'info'
+
+        # Resolve services
         app_hosts = resolve(app_conf, conf)
 
         # Populate my dictionary
-        my = { "services": app_hosts,
-               "conf_name": app_conf['conf_name']
-        }
-	
-	# Generate config from template
+        my = {"services": app_hosts,
+              "conf_name": app_conf['conf_name']}
+
+        # Generate config from template
         service_conf = gen(my, app_conf['template'])
 
-        stdout, first =  reload_conf(service_conf, app_conf, first)
-        print(stdout)
+        first = reload_conf(service_conf, app_conf, first, conf)
 
-
-    sleep( conf['wait_time'] )
-
+    sleep(conf['wait_time'])
