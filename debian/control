@@ -1,10 +1,10 @@
 Source: surok
 Section: admin
 Priority: optional
-Maintainer: Denis Zheleztsov <difrex@bingo-boom.ru>
+Maintainer: Denis Zheleztsov <difrex.punk@gmail.com>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.5
-Vcs-Git: http://vcs.bingo-boom.ru/difrex/surok.git
+Vcs-Git: https://github.com/Difrex/surok
 
 Package: surok
 Architecture: all
