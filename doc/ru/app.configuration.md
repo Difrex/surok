@@ -13,7 +13,7 @@
     "conf_name": "kiosk",
     "template": "/etc/surok/templates/kiosk.jj2",
     "dest": "/etc/nginx/sites-available/kioskservice.conf",
-    "reload_cmd": "/bin/systemctl reload nginx",
+    "reload_cmd": "/sbin/nginx -t && /bin/systemctl reload nginx",
     "run_cmd": ["/usr/bin/node", "-c", "config.json"]
 }
 ```
