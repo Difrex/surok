@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import requests
+import memcache
 
 
 # Get old configuration
@@ -20,6 +21,12 @@ def get_old(name, service_conf):
         return 1
     else:
         return 0
+
+
+# Get old discovered servers from memcache
+def get_old_from_memcache(mc, name, service_conf):
+    mc_servers_key = 'surok_' + name + '_servers'
+    old_servers = mc.get(mc_servers_key)
 
 
 def write_lock(name, service_conf):
@@ -43,29 +50,45 @@ def do_reload(service_conf, app_conf):
     return stdout
 
 
-def reload_conf(service_conf, app_conf, first, conf):
+def reload_conf(service_conf, app_conf, conf, app_hosts):
 
     # Check first loop
-    if first is True:
-        stdout = do_reload(service_conf, app_conf)
-        first = False
-        logging.info(stdout)
-        return first
+    #if first is True:
+    #    stdout = do_reload(service_conf, app_conf)
+    #    first = False
+    #    logging.info(stdout)
+    #    return first
 
     # Check marathon enabled in configuration
     if conf['marathon']['enabled'] is True:
         restart_self_in_marathon(conf['marathon'])
+
+    # Check memcache
+    # Need rewriting
+    ################
+    if 'memcached' in conf:
+        if conf['memcached']['enabled'] is True:
+            # Check old servers
+            if conf['memcached']['discovery']['enabled'] is True:
+                logging.info('Discovery of Memcached not implemented')
+
+            mc = memcache.Client(conf['memcached']['hosts'])
+            get_old_from_memcache(mc, name, service_conf)
+    else:
+        logging.warning('DEPRECATED main conf file. Please use new syntax!')
+    # End of memcache block
+    #######################
         
     if get_old(app_conf['conf_name'], service_conf) != 1:
         stdout = do_reload(service_conf, app_conf)
         logging.info(stdout)
-        return first
+        return
     else:
         if conf['loglevel'] == 'debug':
             logging.debug('Same config ' +
                           app_conf['conf_name'] +
                           ' Skip reload')
-        return first
+        return
 
 
 # Do POST request to marathon API

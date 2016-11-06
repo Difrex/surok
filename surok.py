@@ -16,7 +16,7 @@ surok_conf = '/etc/surok/conf/surok.json'
 
 # Command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--config')
+parser.add_argument('-c', '--config', help='surok.json path')
 args = parser.parse_args()
 if args.config:
         surok_conf = args.config
@@ -51,10 +51,6 @@ def load_app_conf(app):
 # Main loop
 ###########
 
-# Bad hack for detect first run
-# On host system set it to False
-# TODO: put it to config
-first = True
 while 1:
     confs = get_configs()
     for app in confs:
@@ -77,6 +73,6 @@ while 1:
         # Generate config from template
         service_conf = gen(my, app_conf['template'])
 
-        first = reload_conf(service_conf, app_conf, first, conf)
+        reload_conf(service_conf, app_conf, conf, app_hosts)
 
     sleep(conf['wait_time'])
