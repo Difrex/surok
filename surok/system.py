@@ -88,7 +88,7 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
         if conf['memcached']['enabled'] is True:
             # Check old servers
             if conf['memcached']['discovery']['enabled'] is True:
-                logging.info('Discovery of Memcached not implemented')
+                logging.warning('Discovery of Memcached not implemented')
 
             mc = memcache.Client(conf['memcached']['hosts'])
             if get_old_from_memcache(mc, app_conf['conf_name'], service_conf) != 1:
