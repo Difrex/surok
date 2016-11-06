@@ -24,9 +24,25 @@ def get_old(name, service_conf):
 
 
 # Get old discovered servers from memcache
-def get_old_from_memcache(mc, name, service_conf):
+def get_old_from_memcache(mc, name, app_hosts):
     mc_servers_key = 'surok_' + name + '_servers'
+    new_servers = []
     old_servers = mc.get(mc_servers_key)
+    for service in app_hosts:
+        for server in app_hosts[service]:
+            new_servers.append(server['name'] + ':' + server['port'])
+
+    for server in new_servers:
+        if server not in old_servers:
+            write_confs_to_memcache(mc, new_servers, mc_servers_key)
+            return 0
+
+    return 1
+
+
+# Write to memcache
+def write_confs_to_memcache(mc, servers, key):
+    mc.set(key, servers)
 
 
 def write_lock(name, service_conf):
@@ -50,6 +66,7 @@ def do_reload(service_conf, app_conf):
     return stdout
 
 
+# !!! NEED REFACTORING !!!
 def reload_conf(service_conf, app_conf, conf, app_hosts):
 
     # Check first loop
@@ -61,7 +78,8 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
 
     # Check marathon enabled in configuration
     if conf['marathon']['enabled'] is True:
-        restart_self_in_marathon(conf['marathon'])
+        if get_old(app_conf['conf_name'], service_conf) != 1:
+            restart_self_in_marathon(conf['marathon'])
 
     # Check memcache
     # Need rewriting
@@ -73,7 +91,11 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
                 logging.info('Discovery of Memcached not implemented')
 
             mc = memcache.Client(conf['memcached']['hosts'])
-            get_old_from_memcache(mc, name, service_conf)
+            if get_old_from_memcache(mc, app_conf['conf_name'], service_conf) != 1:
+                stdout = do_reload(service_conf, app_conf)
+                logging.info(stdout)
+                return True
+                
     else:
         logging.warning('DEPRECATED main conf file. Please use new syntax!')
     # End of memcache block
@@ -82,13 +104,13 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
     if get_old(app_conf['conf_name'], service_conf) != 1:
         stdout = do_reload(service_conf, app_conf)
         logging.info(stdout)
-        return
+        return True
     else:
         if conf['loglevel'] == 'debug':
             logging.debug('Same config ' +
                           app_conf['conf_name'] +
                           ' Skip reload')
-        return
+        return False
 
 
 # Do POST request to marathon API
