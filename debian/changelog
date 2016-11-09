@@ -1,3 +1,9 @@
+surok (0.7.4~rc2) testing; urgency=medium
+
+  * Fallback to files
+
+ -- Denis Zheleztsov <difrex.punk@gmail.com>  Wed, 09 Nov 2016 16:59:34 +0300
+
 surok (0.7.4~rc1) testing; urgency=medium
   
   * !!! WARNING !!! NOT TESTED
