@@ -68,14 +68,6 @@ def do_reload(service_conf, app_conf):
 
 # !!! NEED REFACTORING !!!
 def reload_conf(service_conf, app_conf, conf, app_hosts):
-
-    # Check first loop
-    #if first is True:
-    #    stdout = do_reload(service_conf, app_conf)
-    #    first = False
-    #    logging.info(stdout)
-    #    return first
-
     # Check marathon enabled in configuration
     if conf['marathon']['enabled'] is True:
         if get_old(app_conf['conf_name'], service_conf) != 1:
@@ -88,19 +80,21 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
         if conf['memcached']['enabled'] is True:
             # Check old servers
             if conf['memcached']['discovery']['enabled'] is True:
-                logging.warning('Discovery of Memcached not implemented')
+                logging.warning('Discovery of Memcached not implpemented')
+            try:
+                mc = memcache.Client(conf['memcached']['hosts'])
+                if get_old_from_memcache(mc, app_conf['conf_name'], service_conf) != 1:
+                    stdout = do_reload(service_conf, app_conf)
+                    logging.info(stdout)
+                    return True
+            except Exception as e:
+                logging.error('Cannot connect to memcached: ' + str(e))
 
-            mc = memcache.Client(conf['memcached']['hosts'])
-            if get_old_from_memcache(mc, app_conf['conf_name'], service_conf) != 1:
-                stdout = do_reload(service_conf, app_conf)
-                logging.info(stdout)
-                return True
-                
     else:
         logging.warning('DEPRECATED main conf file. Please use new syntax!')
-    # End of memcache block
-    #######################
-        
+        # End of memcache block
+        #######################
+
     if get_old(app_conf['conf_name'], service_conf) != 1:
         stdout = do_reload(service_conf, app_conf)
         logging.info(stdout)
@@ -122,12 +116,11 @@ def restart_self_in_marathon(marathon):
     if os.environ.get('MARATHON_APP_ID') is not True:
         logging.error('Cannot find MARATHON_APP_ID. Not in Mesos?')
         sys.exit(2)
-    app_id = os.environ['MARATHON_APP_ID']
-    uri = 'http://' + host + '/v2/apps/' + app_id + '/restart'
+        app_id = os.environ['MARATHON_APP_ID']
+        uri = 'http://' + host + '/v2/apps/' + app_id + '/restart'
 
     # Ok. In this step we made restart request to Marathon
     if marathon['force'] is True:
         r = requests.post(uri, data = {'force': 'true'})
     else:
         r = requests.post(uri, data = {'force': 'false'})
-    
