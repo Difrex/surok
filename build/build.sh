@@ -30,12 +30,15 @@ MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 COPY surok /opt/surok_build
 
 # Install build depends
-RUN apt-get update && apt-get -y install devscripts debhelper
+RUN apt-get update
+RUN apt-get -y install devscripts debhelper
+RUN apt-get clean
 
 ENTRYPOINT cd /opt/surok_build && dpkg-buildpackage -uc -us && \
 mv /opt/surok_*.deb /opt/out
 EOF
 }
+
 function build_package() {
 		# run build
 		echo 'Build builder'
@@ -57,6 +60,8 @@ MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 ADD out/${DEB} /tmp
 RUN apt-get update && apt-get install -y ${SUROK_DEPS}
 RUN dpkg -i /tmp/${DEB}
+RUN apt-get clean
+RUN rm -rf /tmp/*
 
 ENTRYPOINT cd /opt/surok && python3 surok.py -c /etc/surok/conf/surok.json
 EOF
@@ -67,17 +72,12 @@ function usage() {
 		echo "$0 <clean|build_package|surok_image>"
 }
 
-case $1 in clean)
-							 cleanup
-							 ;;
-						build_package)
-								build_builder
-								build_package
-								;;
-						surok_image)
-								build_surok_base
-								;;
-						*)
-								usage
-								;;
+case $1 in
+		clean) cleanup ;;
+		build_package)
+				build_builder
+				build_package
+				;;
+		surok_image) build_surok_base	;;
+		*) usage ;;
 esac
