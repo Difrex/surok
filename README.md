@@ -20,3 +20,7 @@ deb-пакет будет лежать в build/out
 cd build
 ./build surok_image
 ```
+
+## Известные проблемы
+
+* В Debian Jessie поломан пакет python3-memcache. Бэкпортируйте свежую версию из testing (<= 1.57).

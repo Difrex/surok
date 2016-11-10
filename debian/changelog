@@ -1,3 +1,9 @@
+surok (0.7.4~rc2-1) testing; urgency=medium
+
+  * memcache resolving
+
+ -- Denis Zheleztsov <difrex.punk@gmail.com>  Thu, 10 Nov 2016 17:23:01 +0300
+
 surok (0.7.4~rc2) testing; urgency=medium
 
   * Fallback to files

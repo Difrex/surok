@@ -20,3 +20,7 @@ build surok base docker image
 cd build
 ./build surok_image
 ```
+
+## Known issues
+
+* python3-memcache is broken in Debian Jessie. Backport fresh version from testing (>= 1.57).
