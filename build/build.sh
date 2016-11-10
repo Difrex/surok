@@ -21,18 +21,18 @@ function build_builder() {
 		CUR_DIR=$(pwd)
 
 		cat > Dockerfile.builder <<EOF
-FROM debian:latest
+FROM ubuntu:xenial
 
 # Build debian package
 
 MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 
-COPY surok /opt/surok_build
-
 # Install build depends
 RUN apt-get update
 RUN apt-get -y install devscripts debhelper
 RUN apt-get clean
+
+COPY surok /opt/surok_build
 
 ENTRYPOINT cd /opt/surok_build && dpkg-buildpackage -uc -us && \
 mv /opt/surok_*.deb /opt/out
@@ -47,13 +47,15 @@ function build_package() {
 }
 
 function build_surok_base() {
-		build_builder
-		build_package
+		if [[ $1 == 'rebuild' ]]; then
+				build_builder
+				build_package
+		fi
 
 		DEB=$(cd out && ls | grep .deb)
 
 		cat > Dockerfile.surok <<EOF
-FROM debian:latest
+FROM ubuntu:xenial
 
 MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 
@@ -78,6 +80,8 @@ case $1 in
 				build_builder
 				build_package
 				;;
-		surok_image) build_surok_base	;;
+		build_deb) build_package ;;
+		surok_image) build_surok_base	rebuild ;;
+		surok_image_no_rebuild) build_surok_base ;;
 		*) usage ;;
 esac
