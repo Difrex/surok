@@ -3,6 +3,7 @@ import sys
 import logging
 import requests
 import memcache
+from .discovery import resolve
 
 
 # Get old configuration
@@ -66,8 +67,31 @@ def do_reload(service_conf, app_conf):
     return stdout
 
 
+# Discovery memcached servers
+def discovery_memcached(conf):
+    memcache = conf['memcached']
+    app_conf = {
+        "services": [
+            {
+                "name": memcache['discovery']['service'],
+                "group": memcache['discovery']['group']
+            }
+        ]
+    }
+
+    hosts = resolve(app_conf, conf)
+    mc_servers = []
+
+    for server in hosts[memcache['discovery']['service']]:
+        mc_server = server['name'] + ':' + server['port']
+        mc_servers.append(mc_server)
+
+    return mc_servers
+
+
 # !!! NEED REFACTORING !!!
 def reload_conf(service_conf, app_conf, conf, app_hosts):
+    logger = logging.getLogger(__name__)
     # Check marathon enabled in configuration
     if conf['marathon']['enabled'] is True:
         if get_old(app_conf['conf_name'], service_conf) != 1:
@@ -79,16 +103,20 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
     if 'memcached' in conf:
         if conf['memcached']['enabled'] is True:
             # Check old servers
+            mc_hosts = None
             if conf['memcached']['discovery']['enabled'] is True:
-                logging.warning('Discovery of Memcached not implpemented')
+                logger.info('Discovery memcached hosts')
+                mc_hosts = discovery_memcached(conf)
+            else:
+                mc_hosts = conf['memcached']['hosts']
             try:
-                mc = memcache.Client(conf['memcached']['hosts'])
-                if get_old_from_memcache(mc, app_conf['conf_name'], service_conf) != 1:
+                mc = memcache.Client(mc_hosts)
+                if get_old_from_memcache(mc, app_conf['conf_name'], app_hosts) != 1:
                     stdout = do_reload(service_conf, app_conf)
-                    logging.info(stdout)
+                    logger.info(stdout)
                     return True
             except Exception as e:
-                logging.error('Cannot connect to memcached: ' + str(e))
+                logger.error('Cannot connect to memcached: ' + str(e))
 
     else:
         logging.warning('DEPRECATED main conf file. Please use new syntax!')
@@ -97,7 +125,7 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
 
     if get_old(app_conf['conf_name'], service_conf) != 1:
         stdout = do_reload(service_conf, app_conf)
-        logging.info(stdout)
+        logger.info(stdout)
         return True
     else:
         if conf['loglevel'] == 'debug':
