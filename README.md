@@ -1,26 +1,26 @@
 # Surok
 
-Обнаружение сервисов для Apache Mesos.
+Service discovery for Apache Mesos.
 
-* Конфигурация на Jinja2
-* Обнаружение через mesos-dns
-* Перезагрузка конфигурации приложения
+* Jinja2 Templates
+* Discovery over mesos-dns
+* Applications config reload
 
-## Сборка
+## Build
 
-Сборка deb-пакета
+build debian package
 ```
 cd build
-./build build_package
+./build.sh build_package
 ```
-deb-пакет будет лежать в build/out
+A deb-package will be placed in build/out
 
-Сборка базового docker-образа surok
+build surok base docker image
 ```
 cd build
-./build surok_image
+./build.sh surok_image
 ```
 
-## Известные проблемы
+## Known issues
 
-* В Debian Jessie поломан пакет python3-memcache. Бэкпортируйте свежую версию из testing (>= 1.57).
+* python3-memcache is broken in Debian Jessie. Backport fresh version from testing (>= 1.57).
