@@ -8,5 +8,6 @@ Vcs-Git: https://github.com/Difrex/surok
 
 Package: surok
 Architecture: all
-Depends: python3-jinja2, python3-dnsq, python3-requests, python3-memcache (>= 1.57)
+Depends: python3-jinja2, python3-dnsq, python3-requests
+Recommends: python3-memcache (>= 1.57)
 Description: Service discovery for Apache Mesos clusters
