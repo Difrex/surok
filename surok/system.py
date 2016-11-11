@@ -1,8 +1,8 @@
 import os
 import sys
-import logging
 import requests
 from .discovery import resolve
+from .logger import info, warning, error, debug
 
 
 # Get old configuration
@@ -53,7 +53,7 @@ def write_lock(name, service_conf):
 
 
 def do_reload(service_conf, app_conf):
-    logging.warning('Write new configuration of ' + app_conf['conf_name'])
+    warning('Write new configuration of ' + app_conf['conf_name'])
 
     f = open(app_conf['dest'], 'w')
     f.write(service_conf)
@@ -90,7 +90,6 @@ def discovery_memcached(conf):
 
 # !!! NEED REFACTORING !!!
 def reload_conf(service_conf, app_conf, conf, app_hosts):
-    logger = logging.getLogger(__name__)
     # Check marathon enabled in configuration
     if conf['marathon']['enabled'] is True:
         if get_old(app_conf['conf_name'], service_conf) != 1:
@@ -105,33 +104,31 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
             # Check old servers
             mc_hosts = None
             if conf['memcached']['discovery']['enabled'] is True:
-                logger.info('Discovery memcached hosts')
                 mc_hosts = discovery_memcached(conf)
+                info('Discovered memcached hosts: ' + str(mc_hosts))
             else:
                 mc_hosts = conf['memcached']['hosts']
             try:
                 mc = memcache.Client(mc_hosts)
                 if get_old_from_memcache(mc, app_conf['conf_name'], app_hosts) != 1:
                     stdout = do_reload(service_conf, app_conf)
-                    logger.info(stdout)
+                    info(stdout)
                     return True
             except Exception as e:
-                logger.error('Cannot connect to memcached: ' + str(e))
+                error('Cannot connect to memcached: ' + str(e))
 
     else:
-        logging.warning('DEPRECATED main conf file. Please use new syntax!')
+        warning('DEPRECATED main conf file. Please use new syntax!')
         # End of memcache block
         #######################
 
     if get_old(app_conf['conf_name'], service_conf) != 1:
         stdout = do_reload(service_conf, app_conf)
-        logger.info(stdout)
+        info(stdout)
         return True
     else:
         if conf['loglevel'] == 'debug':
-            logging.debug('Same config ' +
-                          app_conf['conf_name'] +
-                          ' Skip reload')
+            debug('Same config ' + app_conf['conf_name'] + ' Skip reload')
         return False
 
 
@@ -142,7 +139,7 @@ def restart_self_in_marathon(marathon):
 
     # Check MARATHON_APP_ID environment varible
     if os.environ.get('MARATHON_APP_ID') is not True:
-        logging.error('Cannot find MARATHON_APP_ID. Not in Mesos?')
+        error('Cannot find MARATHON_APP_ID. Not in Mesos?')
         sys.exit(2)
         app_id = os.environ['MARATHON_APP_ID']
         uri = 'http://' + host + '/v2/apps/' + app_id + '/restart'
