@@ -9,18 +9,21 @@ function cleanup() {
 		rm -f ./Dockerfile*
 }
 
+function copy_surok() {
+	mkdir -p ./surok
+	for f in ../*; do
+			if [[ $f != '../.git' ]] && [[ $f != '../build' ]]; then
+					cp -r $f ./surok;
+			fi
+	done
+
+	SUROK_DEPS=$(grep '^Depends:' surok/debian/control | awk -F': ' '{print $2}' | sed 's/,//g')
+	CUR_DIR=$(pwd)
+}
+
 function build_builder() {
-		mkdir -p ./surok
-		for f in ../*; do
-				if [[ $f != '../.git' ]] && [[ $f != '../build' ]]; then
-						cp -r $f ./surok;
-				fi
-		done
-
-		SUROK_DEPS=$(grep '^Depends:' surok/debian/control | awk -F': ' '{print $2}' | sed 's/,//g')
-		CUR_DIR=$(pwd)
-
-		cat > Dockerfile.builder <<EOF
+	copy_surok
+	cat > Dockerfile.builder <<EOF
 FROM ubuntu:xenial
 
 # Build debian package
@@ -70,8 +73,33 @@ EOF
 		docker build -t surok_base:latest -f Dockerfile.surok .
 }
 
+function build_alpine() {
+	copy_surok
+	cat > Dockerfile.alpine << EOF
+FROM alpine:latest
+
+MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
+
+# Install Python
+RUN apk update && apk add python3
+
+# Upgrade pip
+RUN pip3 install --upgrade pip
+
+RUN pip3 install dnspython
+RUN pip3 install jinja2
+RUN pip3 install requests
+RUN pip3 install python-memcached
+
+COPY surok /opt/surok
+
+ENTRYPOINT cd /opt/surok && python3 surok.py -c /etc/surok/conf/surok.json
+EOF
+docker build -t surok_alpine -f Dockerfile.alpine .
+}
+
 function usage() {
-		echo "$0 <clean|build_package|surok_image>"
+		echo "$0 <clean|build_package|surok_image|alpine>"
 }
 
 case $1 in
@@ -83,5 +111,6 @@ case $1 in
 		build_deb) build_package ;;
 		surok_image) build_surok_base	rebuild ;;
 		surok_image_no_rebuild) build_surok_base ;;
+		alpine) build_alpine ;;
 		*) usage ;;
 esac
