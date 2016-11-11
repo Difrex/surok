@@ -1,0 +1,14 @@
+sudo: required
+
+language: python
+python:
+  - "3.5"
+
+services:
+  - docker
+
+before_install:
+  - docker pull ubuntu:xenial
+
+script:
+  - cd build && ./build.sh surok_image
