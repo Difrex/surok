@@ -1,18 +1,8 @@
 import dns.resolver
 import dns.query
 from dns.exception import DNSException
-import logging
+from .logger import info, warning, error, debug
 import sys
-
-
-# Logger configuration
-# This need to be moved
-def get_logger():
-    # Configure logging
-    FORMAT = '%(asctime) %(message)s'
-    logging.basicConfig(format=FORMAT)
-    logger = logging.getLogger(__name__)
-    return logger
 
 
 # Resolve service from mesos-dns SRV record
@@ -21,17 +11,16 @@ def resolve(app, conf):
     hosts = {}
     services = app['services']
     domain = conf['domain']
-    logger = get_logger()
 
     for service in services:
         hosts[service['name']] = {}
 
         group = get_group(service, app)
         if group is False:
-            logger.error('Group is not defined in config, SUROK_DISCOVERY_GROUP and MARATHON_APP_ID')
-            logger.error('Not in Mesos launch?')
+            error('Group is not defined in config, SUROK_DISCOVERY_GROUP and MARATHON_APP_ID')
+            error('Not in Mesos launch?')
             sys.exit(2)
-        
+
         # Port name from app config
         ports = None
         try:
@@ -46,7 +35,7 @@ def resolve(app, conf):
             for port_name in ports:
                 fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain
                 hosts[service['name']][port_name] = do_query(fqdn, conf['loglevel'])
-        else:          
+        else:
             fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
             hosts[service['name']] = do_query(fqdn, conf['loglevel'])
 
@@ -56,11 +45,12 @@ def resolve(app, conf):
 # Do SRV queries
 # Return array: [{"name": "f.q.d.n", "port": 8876}]
 def do_query(fqdn, loglevel):
-    logger = get_logger()
     servers = []
     try:
-        query = dns.resolver.query(fqdn, 'SRV')
-        query.lifetime = 1.0
+        resolver = dns.resolver.Resolver()
+        resolver.lifetime = 1
+        resolver.timeout = 1
+        query = resolver.query(fqdn, 'SRV')
 
         for rdata in query:
             info = str(rdata).split()
@@ -68,7 +58,7 @@ def do_query(fqdn, loglevel):
             servers.append(server)
     except DNSException as e:
         if loglevel != 'info':
-            logger.error("Could not resolve " + fqdn + ': ' + str(e))
+            error("Could not resolve " + fqdn + ': ' + str(e))
 
     return servers
 
@@ -101,6 +91,6 @@ def parse_marathon_app_id(marathon_app_id):
         group = group + marathon_app_id[counter]
         if counter != i + 1:
             group += '.'
-        counter -= 1
+            counter -= 1
 
     return group
