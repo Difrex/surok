@@ -1,3 +1,11 @@
+surok (0.7.4) testing; urgency=medium
+
+  * Memcached support as a optional dependency. Require >= 1.57 version of python3-memcache module
+  * Resolving memcached host(s) via mesos-dns
+  * Old style config is deprecated and will be drop in V0.8
+
+ -- Denis Zheleztsov <difrex.punk@gmail.com>  Fri, 11 Nov 2016 10:17:01 +0300
+
 surok (0.7.4~rc2-1) testing; urgency=medium
 
   * memcache resolving
