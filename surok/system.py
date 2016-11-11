@@ -100,8 +100,8 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
     # Need rewriting
     ################
     if 'memcached' in conf:
-        import memcache
         if conf['memcached']['enabled'] is True:
+            import memcache
             # Check old servers
             mc_hosts = None
             if conf['memcached']['discovery']['enabled'] is True:
