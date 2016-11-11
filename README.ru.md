@@ -1,4 +1,5 @@
 # Surok
+[![Build Status](https://travis-ci.org/Difrex/surok.svg?branch=master)](https://travis-ci.org/Difrex/surok)
 
 Обнаружение сервисов для Apache Mesos.
 
