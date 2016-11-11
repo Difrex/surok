@@ -60,7 +60,7 @@ FROM ubuntu:xenial
 MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 
 ADD out/${DEB} /tmp
-RUN apt-get update && apt-get install -y ${SUROK_DEPS}
+RUN apt-get update && apt-get install -y ${SUROK_DEPS} python3-memcache
 RUN dpkg -i /tmp/${DEB}
 RUN apt-get clean
 RUN rm -rf /tmp/*

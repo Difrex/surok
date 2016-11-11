@@ -1,3 +1,9 @@
+surok (0.7.4-1) testing; urgency=medium
+
+  * copyright update
+
+ -- Denis Zheleztsov <difrex.punk@gmail.com>  Fri, 11 Nov 2016 12:14:41 +0300
+
 surok (0.7.4) testing; urgency=medium
 
   * Memcached support as a optional dependency. Require >= 1.57 version of python3-memcache module
