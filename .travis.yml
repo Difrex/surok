@@ -2,6 +2,7 @@ sudo: required
 
 language: python
 python:
+  - "3.4"
   - "3.5"
 
 services:
@@ -9,6 +10,7 @@ services:
 
 before_install:
   - docker pull ubuntu:xenial
+  - cd build && ./build.sh surok_image
 
 script:
-  - cd build && ./build.sh surok_image
+  - cd build && ./runtests.sh
