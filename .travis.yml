@@ -13,4 +13,4 @@ before_install:
   - cd build && ./build.sh surok_image
 
 script:
-  - cd build && ./runtests.sh
+  - ./runtests.sh
