@@ -45,5 +45,27 @@ class TestLogger(unittest.TestCase):
         self.assertIn('DEBUG', m({'level': 'DEBUG', 'raw': 'log message'}))
 
 
+class TestMemcachedDiscovery(unittest.TestCase):
+
+    def test_discovery_memcache(self):
+        from surok.system import discovery_memcached
+
+        # Load base configurations
+        surok_conf = '/etc/surok/conf/surok.json'
+        # Read config file
+        f = open(surok_conf, 'r')
+        conf = json.loads(f.read())
+        f.close()
+
+        self.assertEqual(discovery_memcached(conf), [])
+
+
+class TestGetGroup(unittest.TestCase):
+
+    def test_get_group(self):
+        from surok.discovery import get_group
+        self.assertFalse(get_group({}, {'env': os.environ}))
+        
+
 if __name__ == '__main__':
     unittest.main()
