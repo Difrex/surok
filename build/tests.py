@@ -27,22 +27,22 @@ class TestLogger(unittest.TestCase):
     def test_info(self):
         from surok.logger import make_message
         m = make_message
-        self.assertIn('INFO', m({'level': 'info', 'raw': 'log message'}))
+        self.assertIn('INFO', m({'level': 'INFO', 'raw': 'log message'}))
 
     def test_warning(self):
         from surok.logger import make_message
         m = make_message
-        self.assertIn('WARNING', m({'level': 'warning', 'raw': 'log message'}))
+        self.assertIn('WARNING', m({'level': 'WARNING', 'raw': 'log message'}))
 
     def test_error(self):
         from surok.logger import make_message
         m = make_message
-        self.assertIn('ERROR', m({'level': 'error', 'raw': 'log message'}))
+        self.assertIn('ERROR', m({'level': 'ERROR', 'raw': 'log message'}))
 
     def test_info(self):
         from surok.logger import make_message
         m = make_message
-        self.assertIn('DEBUG', m({'level': 'debug', 'raw': 'log message'}))
+        self.assertIn('DEBUG', m({'level': 'DEBUG', 'raw': 'log message'}))
 
 
 if __name__ == '__main__':
