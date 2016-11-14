@@ -1,6 +1,7 @@
 conf/surok.json etc/surok/conf
 surok/templates.py opt/surok/surok
 surok/system.py opt/surok/surok
+surok/logger.py opt/surok/surok
 surok/__init__.py opt/surok/surok
 surok/discovery.py opt/surok/surok
 surok.py opt/surok

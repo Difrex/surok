@@ -11,6 +11,8 @@ services:
 before_install:
   - docker pull ubuntu:xenial
   - cd build && ./build.sh surok_image
+  - ./build.sh alpine
+  - ./build.sh centos
 
 script:
   - ./runtests.sh

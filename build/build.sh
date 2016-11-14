@@ -5,7 +5,7 @@ set -e
 . functions.sh
 
 function usage() {
-		echo "$0 <clean|build_package|surok_image|alpine>"
+		echo "$0 <clean|build_package|surok_image|alpine|centos>"
 }
 
 case $1 in
@@ -18,5 +18,6 @@ case $1 in
 		surok_image) build_surok_base	rebuild ;;
 		surok_image_no_rebuild) build_surok_base ;;
 		alpine) build_alpine ;;
+        centos) build_centos ;;
 		*) usage ;;
 esac
