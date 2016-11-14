@@ -13,6 +13,7 @@ before_install:
   - cd build && ./build.sh surok_image
   - ./build.sh alpine
   - ./build.sh centos
+  - ./build.sh centos_rpm
 
 script:
   - ./runtests.sh
