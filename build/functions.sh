@@ -136,9 +136,6 @@ MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 
 RUN yum -y install rpm-build
 COPY surok /tmp/surok-${VERSION}
-RUN find /tmp/surok-${VERSION} -name '*pyc' -delete
-RUN find /tmp/surok-${VERSION} -name '*pyo' -delete
-RUN rm -rf /tmp/surok-${VERSION}/surok/__pycache__
 RUN mkdir -p /root/rpmbuild/SPECS
 RUN mkdir -p /root/rpmbuild/SOURCES
 RUN cd /tmp && tar -czvf /root/rpmbuild/SOURCES/surok.tar.gz surok-${VERSION}
@@ -152,20 +149,33 @@ EOF
 }
 
 function fedora_builder() {
-    cat > Dockerfile.fedora_builder <<EOF
+    copy_surok
+    VERSION=$(grep 'Version: ' surok/surok_fedora.spec | awk -F': ' '{print $2}')
+    cat > Dockerfile.centos_builder <<EOF
 FROM fedora:24
 
 MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 
 RUN dnf -y install rpm-build
-COPY surok /root/rpmbuild/SOURCES/surok
+COPY surok /tmp/surok-${VERSION}
+RUN mkdir -p /root/rpmbuild/SPECS
+RUN mkdir -p /root/rpmbuild/SOURCES
+RUN cd /tmp && tar -czvf /root/rpmbuild/SOURCES/surok.tar.gz surok-${VERSION}
+ADD surok/surok_fedora.spec /root/rpmbuild/SPECS/
 
 RUN dnf clean all
+
+ENTRYPOINT cd /root/rpmbuild/SPECS && rpmbuild -bb surok_fedora.spec
 EOF
-    docker build -t surok_builder_fedora -f Dockerfile.fedora_builder .
+    docker build -t surok_builder_fedora -f Dockerfile.centos_builder .
 }
 
 function build_centos_rpm() {
     centos_builder
     docker run -v $(pwd)/out:/root/rpmbuild/RPMS -ti surok_builder_centos
+}
+
+function build_fedora_rpm() {
+    fedora_builder
+    docker run -v $(pwd)/out:/root/rpmbuild/RPMS -ti surok_builder_fedora
 }
