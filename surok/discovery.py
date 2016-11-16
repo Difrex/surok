@@ -42,8 +42,9 @@ def resolve(app, conf):
     return hosts
 
 
-# Do SRV queries
-# Return array: [{"name": "f.q.d.n", "port": 8876}]
+# Do DNS queries
+# Return array:
+# [{"name": "f.q.d.n", "port": 8876, "ip": ["10.10.10.1", "10.10.10.2"]}]
 def do_query(fqdn, loglevel):
     servers = []
     try:
@@ -51,14 +52,18 @@ def do_query(fqdn, loglevel):
         resolver.lifetime = 1
         resolver.timeout = 1
         query = resolver.query(fqdn, 'SRV')
-
         for rdata in query:
             info = str(rdata).split()
-            server = {'name': info[3][:-1], 'port': info[2]}
+            name = info[3][:-1]
+            port = info[2]
+            server = {'name': name, 'port': port, 'ip': []}
+            a_query = resolver.query(name, 'A')
+            for a_rdata in a_query:
+                server['ip'].append(a_rdata)
             servers.append(server)
     except DNSException as e:
         if loglevel != 'info':
-            error("Could not resolve " + fqdn + ': ' + str(e))
+            error("Could not resolve " + fqdn)
 
     return servers
 
