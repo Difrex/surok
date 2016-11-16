@@ -59,8 +59,8 @@ def do_query(fqdn, loglevel):
             server = {'name': name, 'port': port, 'ip': []}
             a_query = resolver.query(name, 'A')
             for a_rdata in a_query:
-                server['ip'].append(a_rdata)
-            servers.append(server)
+                server['ip'].append(a_rdata.address)
+                servers.append(server)
     except DNSException as e:
         if loglevel != 'info':
             error("Could not resolve " + fqdn)
