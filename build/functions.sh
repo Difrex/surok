@@ -101,12 +101,12 @@ FROM centos:latest
 
 MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
 
-RUN yum -y install epel-release
-RUN yum -y install python34
+# RUN yum -y install epel-release
+# RUN yum -y install python34
 
 # Install pip
 RUN cd /tmp && curl -O https://bootstrap.pypa.io/get-pip.py
-RUN cd /tmp && python3.4 get-pip.py
+RUN cd /tmp && python get-pip.py
 
 # Install surok
 COPY surok /opt/surok
@@ -116,12 +116,12 @@ RUN ln -s /opt/surok/conf.d /etc/surok/conf.d
 RUN ln -s /opt/surok/templates /etc/surok/templates
 
 # Install surok depends
-RUN cd /opt/surok && pip3 install -r requriments.txt
+RUN cd /opt/surok && pip install -r requriments.txt
 
 # Cleanup
 RUN yum clean all
 
-ENTRYPOINT cd /opt/surok && python3 surok.py -c /etc/surok/conf/surok.json
+ENTRYPOINT cd /opt/surok && python surok.py -c /etc/surok/conf/surok.json
 EOF
     docker build -t surok_centos -f Dockerfile.centos .
 }
