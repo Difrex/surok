@@ -89,13 +89,7 @@ def get_group(service, app):
 # Return marathon.group
 def parse_marathon_app_id(marathon_app_id):
     marathon_app_id = marathon_app_id.split('/')
-    group = ''
-    counter = len(marathon_app_id) - 2
-    i = 0
-    while counter > i:
-        group = group + marathon_app_id[counter]
-        if counter != i + 1:
-            group += '.'
-            counter -= 1
-
-    return group
+    del(marathon_app_id[-1])
+    marathon_app_id.reverse()
+    group = ".".join(marathon_app_id)[:-1]
+    return(group)
