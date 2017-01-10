@@ -32,7 +32,7 @@ f.close()
 def get_configs():
     confs = [f for f in listdir(conf['confd']) if isfile(
         join(conf['confd'], f))]
-    return confs
+    return sorted(confs)
 
 
 # Get Surok App configuration
