@@ -5,11 +5,11 @@ import os
 from os import listdir
 from os.path import isfile, join
 import json
+import argparse
 from surok.templates import gen
 from surok.discovery import resolve
 from surok.system import reload_conf
 
-import argparse
 
 # Load base configurations
 surok_conf = '/etc/surok/conf/surok.json'
@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', help='surok.json path')
 args = parser.parse_args()
 if args.config:
-        surok_conf = args.config
+    surok_conf = args.config
 
 # Read config file
 f = open(surok_conf, 'r')
@@ -58,10 +58,9 @@ while 1:
 
         # Will be removed later
         # For old configs
-        try:
+        loglevel = 'info'
+        if 'loglevel' in conf:
             loglevel = conf['loglevel']
-        except:
-            conf['loglevel'] = 'info'
 
         # Resolve services
         app_hosts = resolve(app_conf, conf)
