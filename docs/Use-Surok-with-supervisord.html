@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Use-Surok-with-supervisord.html</title>
+
+</head>
+
+<body>
+
+<h1>Use Surok with supervisord</h1>
+
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+**Table of Contents**
+
+- [Use Surok with supervisord](#use-surok-with-supervisord)
+    - [supervisord.conf](#supervisordconf)
+    - [surok service conf](#surok-service-conf)
+    - [install supervisord in you container and set it as entrypoint](#install-supervisord-in-you-container-and-set-it-as-entrypoint)
+
+<!-- markdown-toc end -->
+
+<h2>supervisord.conf</h2>
+
+<p>Write supervisord.conf. Example:
+```ini
+[unix<em>http</em>server]
+file=/tmp/supervisor.sock</p>
+
+<p>[supervisord]
+logfile=/tmp/supervisord.log ; (main log file;default $CWD/supervisord.log)
+logfile<em>maxbytes=50MB        ; (max main logfile bytes b4 rotation;default 50MB)
+logfile</em>backups=10           ; (num of main logfile rotation backups;default 10)
+loglevel=info                ; (log level;default info; others: debug,warn,trace)
+pidfile=/tmp/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
+nodaemon=true               ; (start in foreground if true;default false)
+minfds=1024                  ; (min. avail startup file descriptors;default 1024)
+minprocs=200</p>
+
+<p>[supervisorctl]
+serverurl=unix:///tmp/supervisor.sock</p>
+
+<p>[rpcinterface:supervisor]
+supervisor.rpcinterface<em>factory = supervisor.rpcinterface:make</em>main_rpcinterface</p>
+
+<p>[program:surok]
+command=/usr/bin/python3 /opt/surok/surok.py -c /etc/surok/conf/surok.json</p>
+
+<p>[program:my<em>service]
+command=/app/my</em>service -conf /app/conf/my_service.conf
+user=www-data
+startsecs=2
+```</p>
+
+<h2>surok service conf</h2>
+
+<p>Write /etc/surok/conf.d/my_service.json config like that
+```json
+{
+    "services": [
+      {
+    "name": "my-service",
+        "group": "production.web"
+      }</p>
+
+<pre><code>],
+"conf_name": "my_service",
+"template": "/etc/surok/templates/my-service.jj2",
+"dest": "/app/conf/my_service.conf",
+"reload_cmd": "/usr/bin/supervisorctl restart my_service"
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>install supervisord in you container and set it as entrypoint</h2>
+
+<p>```dockerfile
+...</p>
+
+<h1>Install supervisord and provide config</h1>
+
+<p>RUN easy_install supervisor
+ADD supervisord.conf /etc</p>
+
+<p>ENTRYPOINT /usr/bin/supervisord -c /etc/supervisord.conf
+```</p>
+
+</body>
+</html>

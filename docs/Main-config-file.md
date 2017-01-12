@@ -1,3 +1,7 @@
+# Surok main config file
+
+Default location is /etc/surok/conf/surok.json
+
 conf/surok.json
 ```
 {
@@ -5,7 +9,7 @@ conf/surok.json
 		    "force": true,
 		    "host": "http://marathon.mesos:8080",
 		    "enabled": false
-		},
+	},
     "confd": "/etc/surok/conf.d",
     "domain": "marathon.mesos",
     "wait_time": 20,
@@ -13,13 +17,13 @@ conf/surok.json
     "loglevel": "info",
     "container": false,
     "memcached": {
-	"enabled": false,
-	"discovery": {
+	    "enabled": false,
+	    "discovery": {
 	        "enabled": false,
-		"service": "memcached",
-		"group": "system"
-	},
-	"hosts": ["localhost:11211"]
+		    "service": "memcached",
+		    "group": "system"
+	    },
+	    "hosts": ["localhost:11211"]
     }
 }
 ```

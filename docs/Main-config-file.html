@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Main-config-file.html</title>
+
+</head>
+
+<body>
+
+<h1>Surok main config file</h1>
+
+<p>Default location is /etc/surok/conf/surok.json</p>
+
+<p>conf/surok.json
+<code>
+{
+    "marathon": {
+            "force": true,
+            "host": "http://marathon.mesos:8080",
+            "enabled": false
+    },
+    "confd": "/etc/surok/conf.d",
+    "domain": "marathon.mesos",
+    "wait_time": 20,
+    "lock_dir": "/var/tmp",
+    "loglevel": "info",
+    "container": false,
+    "memcached": {
+        "enabled": false,
+        "discovery": {
+            "enabled": false,
+            "service": "memcached",
+            "group": "system"
+        },
+        "hosts": ["localhost:11211"]
+    }
+}
+</code>
+* <strong>marathon section</strong>. Restarting app over marathon api if config changed. Disabled by default.
+* <strong>confd</strong>. Directory where located configs apps.
+* <strong>domain</strong>. Domain served by mesos-dns.
+* <strong>lock<em>dir</strong>. Directory where surok writes temporary configs after resolving.
+* <strong>wait</em>time</strong>. Sleep time in main loop.
+* <strong>container</strong>. Not implemented.
+* <strong>memcached section</strong>. Memcached support. Disabled by default.</p>
+
+</body>
+</html>

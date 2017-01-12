@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>App-config-file.html</title>
+
+</head>
+
+<body>
+
+<h1>Surok app config file</h1>
+
+<p>conf.d/myapp.json
+<code>
+{
+    "services": [
+      {
+        "name": "myapp",
+        "group": "backend.production",
+        "ports": ["proxy", "api"]
+      },
+      {
+        "name": "nginx",
+        "group": "frontend.production"
+      }
+    ],
+    "conf_name": "myapp_backend_production",
+    "template": "/etc/surok/templates/myapp.jj2",
+    "dest": "/etc/myapp/myapp.cfg",
+    "reload_cmd": "killall -9 myapp; /usr/local/bin/myapp -config /etc/myapp/myapp.cfg"
+}
+</code>
+* <strong>services</strong>. List of hashes with required services for app.
+  1. <em>name</em> - string. App name in Marathon.
+  2. <em>group</em> - string. App group in Marathon. Optional. Discovery policy: 1) config 2) SUROK<em>DISCOVERY</em>GROUP environment variable 3) Marathon API
+  3. <em>ports</em> - list. Name of opened port. In marathon of course. Optional.
+* <strong>conf<em>name</strong>. Unique app config name.
+* <strong>template</strong>. Jinja2 template location.
+* <strong>dest</strong>. Destination config path.
+* <strong>reload</em>cmd</strong>. Command to execute if generated config is changed.</p>
+
+</body>
+</html>

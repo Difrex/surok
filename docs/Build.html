@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Build.html</title>
+
+</head>
+
+<body>
+
+<h1>Build packages and images</h1>
+
+<p>build debian package
+<code>
+cd build
+./build.sh build_package
+</code>
+A deb-package will be placed in build/out</p>
+
+<p>build surok base docker image(based on Ubuntu Xenial)
+<code>
+cd build
+./build.sh surok_image
+</code></p>
+
+<p>build surok base Alpine image
+<code>
+cd build
+./build.sh alpine
+</code></p>
+
+<p>build surok base CentOS image
+<code>
+cd build
+./build.sh centos
+</code></p>
+
+<p>ENTRYPOINT is: <code>cd /opt/surok &amp;&amp; pytho3 surok.py -c /etc/surok/conf/surok.json</code></p>
+
+</body>
+</html>

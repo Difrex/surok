@@ -1,4 +1,17 @@
-# Templates
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Templates.html</title>
+
+</head>
+
+<body>
+
+<h1>Templates</h1>
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
@@ -10,12 +23,11 @@
 
 <!-- markdown-toc end -->
 
+<p>Surok using Jinja2 for templates. <a href="http://jinja.pocoo.org/docs/dev/">Jinja2 documentation</a></p>
 
-Surok using Jinja2 for templates. [Jinja2 documentation](http://jinja.pocoo.org/docs/dev/)
+<h2>my dictionary in templates</h2>
 
-## my dictionary in templates
-
-```
+<p><code>
 {
    "services": {
      "nginx": [
@@ -61,56 +73,60 @@ Surok using Jinja2 for templates. [Jinja2 documentation](http://jinja.pocoo.org/
       "HOME": "/var/lib/nginx"
    }
 }
-```
+</code></p>
 
-## Real template example
+<h2>Real template example</h2>
 
-nginx config
+<p>nginx config
 ```
 upstream matrix-http {
-    hash $remote_addr;
+    hash $remote<em>addr;
 {% for server in my['services']['matrix']['http'] %}
-    server {{server['name']}}:{{server['port']}} max_fails=3;
+    server {{server['name']}}:{{server['port']}} max</em>fails=3;
 {% endfor %}
-}
- 
-upstream riot-http {
-    hash $remote_addr;
+}</p>
+
+<p>upstream riot-http {
+    hash $remote<em>addr;
 {% for server in my['services']['riot'] %}
-    server {{server['name']}}:{{server['port']}} max_fails=3;
+    server {{server['name']}}:{{server['port']}} max</em>fails=3;
 {% endfor %}
-}
- 
-server {
+}</p>
+
+<p>server {
     listen 10.15.56.157:80;
-    server_name matrix.example.com;
- 
-    client_max_body_size 10m;
- 
-    location / {
-        proxy_pass http://riot-http;
-        proxy_set_header  X-Real-IP        $remote_addr;
-        proxy_set_header  Host             $http_host;
-        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
-    }
- 
-    location /_matrix/ {
-        proxy_pass http://matrix-http;
-        proxy_set_header  X-Real-IP        $remote_addr;
-        proxy_set_header  Host             $http_host;
-        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
-    }
- 
+    server_name matrix.example.com;</p>
+
+<pre><code>client_max_body_size 10m;
+
+location / {
+    proxy_pass http://riot-http;
+    proxy_set_header  X-Real-IP        $remote_addr;
+    proxy_set_header  Host             $http_host;
+    proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
 }
-```
 
-## Checks in template
+location /_matrix/ {
+    proxy_pass http://matrix-http;
+    proxy_set_header  X-Real-IP        $remote_addr;
+    proxy_set_header  Host             $http_host;
+    proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+}
+</code></pre>
 
-_my['env']_ is a python os.environ class. Look bellow:
-```
+<p>}
+```</p>
+
+<h2>Checks in template</h2>
+
+<p><em>my['env']</em> is a python os.environ class. Look bellow:
+<code>
 {% if my['env'].get('DB_HOST') %}
 host = '{{my['env']['DB_HOST']}}'
 {% else %}
 host = 'localhost'
 {% endif %}
-```
+</code></p>
+
+</body>
+</html>
