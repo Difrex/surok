@@ -11,14 +11,14 @@ Service discovery for Apache Mesos.
 **Table of Contents**
 
 - [Surok](https://difrex.github.io/surok/)
-    - [Build](https://difrex.github.io/surok/Build.html)
+    - [Build](https://github.com/Difrex/surok/blob/master/docs/Build.md)
     - [Wiki](https://github.com/Difrex/surok/wiki)
     - **Configuration**
-      - [Main config file](https://difrex.github.io/surok/Main-config-file.html)
-      - [App config file](https://difrex.github.io/surok/App-config-file.html)
-      - [Templates](https://difrex.github.io/surok/Templates.html)
+      - [Main config file](https://github.com/Difrex/surok/blob/master/docs/Main-config-file.md)
+      - [App config file](https://github.com/Difrex/surok/blob/master/docs/App-config-file.md)
+      - [Templates](https://github.com/Difrex/surok/blob/master/docs/Templates.md)
     - **Usage**
-      - [Use Surok with Supervisord](https://difrex.github.io/surok/Use-Surok-with-supervisord.html)
+      - [Use Surok with Supervisord](https://github.com/Difrex/surok/blob/master/docs/Use-Surok-with-supervisord.md) 
 - [Known issues](#known-issues)
 - [Athors](#authors)
 - [LICENSE](#license)
