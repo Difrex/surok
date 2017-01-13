@@ -1,3 +1,13 @@
+surok (0.7.4.3) testing; urgency=medium
+
+  * Fixed #9
+	* Closes #5
+	* Closes #8
+	* Fixes #11
+	* Fixes #12
+
+ -- Denis Zheleztsov <d_zheleztsov@difrex-mac.wargaming.net>  Fri, 13 Jan 2017 10:17:56 +0300
+
 surok (0.7.4.1) testing; urgency=medium
 
   * closes #3

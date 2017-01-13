@@ -1,6 +1,6 @@
 Summary: Simple service discovery for Apache Mesos clusters
 Name: surok
-Version: 0.7.4.1
+Version: 0.7.4.3
 Release: 1
 License: BSD
 Group: admin
