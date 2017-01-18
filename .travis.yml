@@ -15,5 +15,6 @@ before_install:
   - ./build.sh centos_rpm
   - ./build.sh fedora_rpm
 
+# tests script
 script:
   - ./runtests.sh
