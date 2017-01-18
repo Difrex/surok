@@ -13,7 +13,7 @@ def resolve(app, conf):
     domain = conf['domain']
 
     for service in services:
-        hosts[service['name']] = {}
+        hosts[service['name']] = []
 
         group = get_group(service, app)
         if group is False:
@@ -23,18 +23,38 @@ def resolve(app, conf):
 
         # Port name from app config
         ports = None
-        try:
+        if 'ports' in service:
             ports = service['ports']
-        except:
-            pass
 
-        # This is fast fix for port naming
-        # Will be rewrite later
+        # "service-with-defined-ports":
+        # [
+        #     {
+        #         "name": "example1.com",
+        #         "ip": ["10.10.10.1"],
+        #         "ports": {
+        #             "rpc": 12342,
+        #             "web": 12341
+        #         }
+        #     },
+        #     {
+        #         "name": "example2.com",
+        #         "ports": {
+        #             "rpc": 12344,
+        #             "web": 12343
+        #         }
+        #     }
+        # ]
         fqdn = ''
         if ports is not None:
             for port_name in ports:
-                fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain
-                hosts[service['name']][port_name] = do_query(fqdn, conf['loglevel'])
+                fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain # Need support for udp ports. See #16
+                discovered = do_query(fqdn, conf['loglevel'])
+                for d in discovered:
+                    to_append = {}
+                    to_append['name'] = d['name']
+                    to_append['ip'] = d['ip']
+                    to_append['ports'][port_name] = d['port']
+                    hosts[service['name']].append(to_append)
         else:
             fqdn = '_' + service['name'] + '.' + group + '._tcp.' + domain
             hosts[service['name']] = do_query(fqdn, conf['loglevel'])
