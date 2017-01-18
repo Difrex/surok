@@ -38,7 +38,7 @@ ENTRYPOINT is: ```cd /opt/surok && pytho3 surok.py -c /etc/surok/conf/surok.json
 
 ## Documentation
 
-[Wiki](https://github.com/Difrex/surok/wiki)
+[Wiki](https://github.com/Surkoveds/surok/wiki)
 
 ## Known issues
 
