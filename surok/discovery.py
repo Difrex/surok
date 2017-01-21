@@ -14,7 +14,7 @@ def resolve(app, conf):
 
     for service in services:
         hosts[service['name']] = {}
-
+            
         group = get_group(service, app)
         if group is False:
             error('Group is not defined in config, SUROK_DISCOVERY_GROUP and MARATHON_APP_ID')
@@ -31,6 +31,13 @@ def resolve(app, conf):
         # This is fast fix for port naming
         # Will be rewrite later
         fqdn = ''
+
+        # Discovery over Consul DNS
+        if 'consul' in conf and conf['consul']['enabled']:
+            fqdn = '_' + service['name'] + '._tcp.' + conf['consul']['domain']
+            hosts[service['name']] = do_query(fqdn, conf['loglevel'])
+            continue
+        
         if ports is not None:
             for port_name in ports:
                 fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain
