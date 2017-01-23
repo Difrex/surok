@@ -1,5 +1,5 @@
 # Surok
-[![Build Status](https://travis-ci.org/Difrex/surok.svg?branch=master)](https://travis-ci.org/Difrex/surok)
+[![Build Status](https://travis-ci.org/Surkoveds/surok.svg?branch=master)](https://travis-ci.org/Surkoveds/surok)
 
 Service discovery for Apache Mesos.
 
@@ -38,7 +38,7 @@ ENTRYPOINT is: ```cd /opt/surok && pytho3 surok.py -c /etc/surok/conf/surok.json
 
 ## Documentation
 
-[Wiki](https://github.com/Difrex/surok/wiki)
+[Wiki](https://github.com/Surkoveds/surok/wiki)
 
 ## Known issues
 

@@ -12,7 +12,7 @@ def resolve(app, conf):
     services = app['services']
     domain = conf['domain']
 
-    for service in services:
+    for service in services:           
         hosts[service['name']] = []
 
         group = get_group(service, app)
@@ -45,6 +45,13 @@ def resolve(app, conf):
         #     }
         # ]
         fqdn = ''
+
+        # Discovery over Consul DNS
+        if 'consul' in conf and conf['consul']['enabled']:
+            fqdn = '_' + service['name'] + '._tcp.' + conf['consul']['domain']
+            hosts[service['name']].append(do_query(fqdn, conf['loglevel']))
+            continue
+        
         if ports is not None:
             for port_name in ports:
                 fqdn = '_' + port_name + '.' + '_' + service['name'] + '.' + group + '._tcp.' + domain # Need support for udp ports. See #16
