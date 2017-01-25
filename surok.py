@@ -7,10 +7,11 @@ from os.path import isfile, join
 import json
 import argparse
 from surok.templates import gen
-from surok.discovery import resolve
+from surok.discovery import Discovery
 from surok.system import reload_conf
+from surok.logger import Logger
 
-
+logger=Logger()
 # Load base configurations
 surok_conf = '/etc/surok/conf/surok.json'
 
@@ -47,27 +48,33 @@ def load_app_conf(app):
 
     return c
 
+logger.set_level(conf.get('loglevel','info'))
 
 # Main loop
 ###########
 
+discovery=Discovery()
+
 while 1:
     confs = get_configs()
+
+    # Update config from discovery object
+    discovery.set_config(conf)
+
+    # Update discovery data
+    discovery.update_data()
+
     for app in confs:
         app_conf = load_app_conf(app)
 
-        # Will be removed later
-        # For old configs
-        loglevel = 'info'
-        if 'loglevel' in conf:
-            loglevel = conf['loglevel']
-
         # Resolve services
-        app_hosts = resolve(app_conf, conf)
+        app_hosts = discovery.resolve(app_conf)
 
         # Populate my dictionary
         my = {"services": app_hosts,
               "conf_name": app_conf['conf_name']}
+
+        logger.debug('my=',my)
 
         # Generate config from template
         service_conf = gen(my, app_conf['template'])

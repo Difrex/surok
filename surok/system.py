@@ -1,20 +1,19 @@
 import os
 import sys
 import requests
-from .discovery import resolve
-from .logger import info, warning, error, debug
-
+from .discovery import Discovery
+from .logger import Logger
+logger=Logger()
 
 # Get old configuration
 def get_old(name, service_conf):
-
     try:
         path = '/var/tmp/surok.' + name
         f = open(path, 'r')
         old = f.read()
         f.close()
     except Exception as e:
-        print(str(e))
+        logger.error(str(e))
         return 0
 
     if old == service_conf:
@@ -53,7 +52,7 @@ def write_lock(name, service_conf):
 
 
 def do_reload(service_conf, app_conf):
-    warning('Write new configuration of ' + app_conf['conf_name'])
+    logger.warning('Write new configuration of ' + app_conf['conf_name'])
 
     f = open(app_conf['dest'], 'w')
     f.write(service_conf)
@@ -68,6 +67,7 @@ def do_reload(service_conf, app_conf):
 
 # Discovery memcached servers
 def discovery_memcached(conf):
+    discovery=Discovery()
     memcache = conf['memcached']
     app_conf = {
         "services": [
@@ -78,7 +78,7 @@ def discovery_memcached(conf):
         ]
     }
 
-    hosts = resolve(app_conf, conf)
+    hosts = discovery.resolve(app_conf)
     mc_servers = []
 
     for server in hosts[memcache['discovery']['service']]:
@@ -91,7 +91,7 @@ def discovery_memcached(conf):
 # !!! NEED REFACTORING !!!
 def reload_conf(service_conf, app_conf, conf, app_hosts):
     # Check marathon enabled in configuration
-    if conf['marathon']['enabled'] is True:
+    if conf['marathon'].get('restart',False):
         if get_old(app_conf['conf_name'], service_conf) != 1:
             restart_self_in_marathon(conf['marathon'])
 
@@ -105,47 +105,38 @@ def reload_conf(service_conf, app_conf, conf, app_hosts):
             mc_hosts = None
             if conf['memcached']['discovery']['enabled'] is True:
                 mc_hosts = discovery_memcached(conf)
-                info('Discovered memcached hosts: ' + str(mc_hosts))
+                logger.info('Discovered memcached hosts: ' + str(mc_hosts))
             else:
                 mc_hosts = conf['memcached']['hosts']
             try:
                 mc = memcache.Client(mc_hosts)
                 if get_old_from_memcache(mc, app_conf['conf_name'], app_hosts) != 1:
                     stdout = do_reload(service_conf, app_conf)
-                    info(stdout)
+                    logger.info(stdout)
                     return True
             except Exception as e:
-                error('Cannot connect to memcached: ' + str(e))
+                logger.error('Cannot connect to memcached: ' + str(e))
 
     else:
-        warning('DEPRECATED main conf file. Please use new syntax!')
+        logger.warning('DEPRECATED main conf file. Please use new syntax!')
         # End of memcache block
         #######################
 
     if get_old(app_conf['conf_name'], service_conf) != 1:
         stdout = do_reload(service_conf, app_conf)
-        info(stdout)
+        logger.info(stdout)
         return True
     else:
-        if conf['loglevel'] == 'debug':
-            debug('Same config ' + app_conf['conf_name'] + ' Skip reload')
+        logger.debug('Same config ' + app_conf['conf_name'] + ' Skip reload')
         return False
-
 
 # Do POST request to marathon API
 # /v2/apps//app/name/restart
 def restart_self_in_marathon(marathon):
-    host = marathon['host']
-
     # Check MARATHON_APP_ID environment varible
-    if os.environ.get('MARATHON_APP_ID') is not True:
-        error('Cannot find MARATHON_APP_ID. Not in Mesos?')
+    if not os.environ.get('MARATHON_APP_ID',False):
+        logger.error('Cannot find MARATHON_APP_ID. Not in Mesos?')
         sys.exit(2)
-        app_id = os.environ['MARATHON_APP_ID']
-        uri = 'http://' + host + '/v2/apps/' + app_id + '/restart'
-
     # Ok. In this step we made restart request to Marathon
-    if marathon['force'] is True:
-        r = requests.post(uri, data = {'force': 'true'})
-    else:
-        r = requests.post(uri, data = {'force': 'false'})
+    r = requests.post('http://'+marathon['host']+'/v2/apps/'+os.environ['MARATHON_APP_ID']+'/restart',
+                      data={'force': marathon.get('force',False)})
