@@ -1,36 +1,51 @@
 import sys
+import json
 from time import time
+_loglevel='info'
+msg_level={'debug':'DEBUG',
+           'info':'INFO',
+           'warning':'WARNING',
+           'error':'ERROR'}
 
+class Logger:
+    def __init__(self,*args):
+        if args:
+            self.set_level(args[0])
 
-def make_message(message):
-    cur_time = str(time())
-    m = '[' + cur_time + '] ' + message['level'] + ': ' + message['raw'] + "\n"
-    return m
+    def set_level(self,level):
+        if level in ['debug','info','warning','error']:
+            global _loglevel
+            _loglevel=level
 
+    def get_level(self):
+        return _loglevel
 
-def info(message):
-    req = {'level': 'INFO', 'raw': message}
-    m = make_message(req)
+    def __make_message(self,message):
+        r=[]
+        l=self.get_level()
+        for m in message:
+            if type(m).__name__=='str':
+                r.append(m)
+            else:
+                r.append(json.dumps(m,sort_keys=True,indent=2))
+        return '[' + str(time()) + '] ' + msg_level[l] + ': ' + ''.join(r) + "\n"
 
-    sys.stdout.write(m)
+    def debug(self,*message):
+        if self.get_level() in ['debug']:
+            sys.stderr.write(self.__make_message(message))
 
+    def info(self,*message):
+        if self.get_level() in ['debug','info']:
+            sys.stdout.write(self.__make_message(message))
 
-def warning(message):
-    req = {'level': 'WARNING', 'raw': message}
-    m = make_message(req)
+    def warning(self,*message):
+        if self.get_level() in ['debug','info','warning']:
+            sys.stderr.write(self.__make_message(message))
 
-    sys.stderr.write(m)
+    def error(self,*message):
+        sys.stderr.write(self.__make_message(message))
 
+    def testing(self,level,message):
+        self.set_level(level)
+        return self.__make_message(message)
 
-def error(message):
-    req = {'level': 'ERROR', 'raw': message}
-    m = make_message(req)
-
-    sys.stderr.write(m)
-
-
-def debug(message):
-    req = {'level': 'DEBUG', 'raw': message}
-    m = make_message(req)
-
-    sys.stderr.write(m)

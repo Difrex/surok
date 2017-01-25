@@ -6,24 +6,33 @@ conf/surok.json
 ```
 {
     "marathon": {
-		    "force": true,
-		    "host": "http://marathon.mesos:8080",
-		    "enabled": false
-	},
+        "enabled": false,
+        "restart": false,
+        "force": true,
+        "host": "http://marathon.mesos:8080"
+    },
+    "consul": {
+        "enabled": false,
+        "domain": "service.dc1.consul"
+    },
+    "mesos":{
+        "enabled": true,
+        "domain": "marathon.mesos"
+    },
+    "default_discovery": "mesos_dns",
     "confd": "/etc/surok/conf.d",
-    "domain": "marathon.mesos",
     "wait_time": 20,
     "lock_dir": "/var/tmp",
     "loglevel": "info",
     "container": false,
     "memcached": {
-	    "enabled": false,
-	    "discovery": {
-	        "enabled": false,
-		    "service": "memcached",
-		    "group": "system"
-	    },
-	    "hosts": ["localhost:11211"]
+        "enabled": false,
+        "discovery": {
+            "enabled": false,
+            "service": "memcached",
+            "group": "system"
+        },
+        "hosts": ["localhost:11211"]
     }
 }
 ```
