@@ -1,12 +1,12 @@
 {
-    "version":"0.8",
+    "version": "0.8",
     "marathon": {
         "enabled": false,
         "restart": false,
         "force": true,
         "host": "http://marathon.mesos:8080"
     },
-    "mesos":{
+    "mesos": {
         "enabled": false,
         "domain": "marathon.mesos"
     },

@@ -12,7 +12,7 @@ from surok.system import reload_conf
 from surok.logger import Logger
 from surok.config import Config
 
-logger=Logger()
+logger = Logger()
 
 # Command line arguments
 parser = argparse.ArgumentParser()
@@ -20,12 +20,12 @@ parser.add_argument('-c', '--config', help='surok.json path')
 args = parser.parse_args()
 
 # Load base configurations
-config=Config(args.config if args.config else '/etc/surok/conf/surok.json')
+config = Config(args.config if args.config else '/etc/surok/conf/surok.json')
 
 # Main loop
-###########
+#
 
-discovery=Discovery()
+discovery = Discovery()
 
 while 1:
     # Update config from discovery object
@@ -38,7 +38,7 @@ while 1:
         my = {"services": app_hosts,
               "conf_name": app['conf_name']}
 
-        logger.debug('my=',my)
+        logger.debug('my=', my)
 
         # Generate config from template
         service_conf = gen(my, app['template'])

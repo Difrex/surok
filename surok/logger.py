@@ -28,7 +28,7 @@ Public Logger oblect
 class Logger:
     _loglevel = 'info'
     _msg_level = {
-          'debug': 'DEBUG',
+        'debug': 'DEBUG',
            'info': 'INFO',
         'warning': 'WARNING',
           'error': 'ERROR'
@@ -66,21 +66,21 @@ class Logger:
 
     def debug(self, *message):
         if self.get_level() in ['debug']:
-            self._log2err(self._make_message('debug',message))
+            self._log2err(self._make_message('debug', message))
 
     def info(self, *message):
         if self.get_level() in ['debug', 'info']:
-            self._log2out(self._make_message('info',message))
+            self._log2out(self._make_message('info', message))
 
     def warning(self, *message):
         if self.get_level() in ['debug', 'info', 'warning']:
-            self._log2out(self._make_message('warning',message))
+            self._log2out(self._make_message('warning', message))
 
     def error(self, *message):
-        self._log2err(self._make_message('error',message))
+        self._log2err(self._make_message('error', message))
 
-    def _log2err(self,out):
+    def _log2err(self, out):
         sys.stderr.write(out)
 
-    def _log2out(self,out):
+    def _log2out(self, out):
         sys.stdout.write(out)
