@@ -3,6 +3,7 @@ import sys
 import requests
 from .discovery import Discovery
 from .logger import Logger
+
 logger=Logger()
 
 # Get old configuration
@@ -91,7 +92,8 @@ def discovery_memcached(conf):
 # !!! NEED REFACTORING !!!
 def reload_conf(service_conf, app_conf, conf, app_hosts):
     # Check marathon enabled in configuration
-    if conf['marathon'].get('restart',False):
+    if (conf.get('version','0.7')=='0.8' and conf['marathon'].get('restart',False)) or (
+        conf.get('version','0.7')=='0.7' and conf['marathon'].get('enable',False)):
         if get_old(app_conf['conf_name'], service_conf) != 1:
             restart_self_in_marathon(conf['marathon'])
 

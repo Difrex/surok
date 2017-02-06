@@ -1,282 +1,217 @@
+#Public names
+__all__=['Discovery','DiscoveryMesos','DiscoveryMarathon']
 import dns.resolver
 import dns.query
-from dns.exception import DNSException
-from .logger import Logger
+import os
 import sys
 import requests
+from dns.exception import DNSException
+from .config import *
+from .logger import *
 
-# Default config for Discovery class
-_config={
-  'default_discovery':'mesos_dns'     # Default discovery system
-}
-
-# Discoveries objects
-_discoveries={}
-
-#Logger
-logger=Logger()
+# Discovery object
+_discovery_singleton=None
 
 class DiscoveryTemplate:
-    # Default config values for discovery template
-    _config={}
-    _defconfig={'enabled':False}
-
-    def __init__(self,conf):
-        for key in self._defconfig.keys():
-            if key not in self._config.keys():
-                self._config[key]=self._defconfig[key]
-        self.set_config(conf)
-
-    def set_config(self,conf):
-        pass
+    def __init__(self):
+        self._config=Config()
+        self._logger=Logger()
 
     def enabled(self):
-        return self._config['enabled']
+        return self._config[self._config_section].get('enabled',False)
 
     def update_data(self):
         pass
 
-    def get_group(self,service, app):
-        # Check group in app conf
-        if 'group' in service:
-            return service['group']
+    # Do DNS queries
+    # Return array:
+    # ["10.10.10.1", "10.10.10.2"]
+    def do_query_a(self,fqdn):
+        servers = []
+        try:
+            resolver = dns.resolver.Resolver()
+            for a_rdata in resolver.query(fqdn, 'A'):
+                servers.append(a_rdata.address)
+        except DNSException as e:
+            self._logger.error("Could not resolve ",fqdn)
+        return servers
 
-        # Check environment variable
-        elif app['env'].get('SUROK_DISCOVERY_GROUP'):
-            return app['env']['SUROK_DISCOVERY_GROUP']
-
-        # Check marathon environment variable
-        elif app['env'].get('MARATHON_APP_ID'):
-            return ".".join(app['env']['MARATHON_APP_ID'].split('/')[-2:0:-1])
-
-        else:
-            logger.error('Group is not defined in config, SUROK_DISCOVERY_GROUP and MARATHON_APP_ID')
-            logger.error('Not in Mesos launch?')
-            sys.exit(2)
+    # Do DNS queries
+    # Return array:
+    # [{"name": "f.q.d.n", "port": 8876, "ip": ["10.10.10.1", "10.10.10.2"]}]
+    def do_query_srv(self,fqdn):
+        servers = []
+        try:
+            resolver = dns.resolver.Resolver()
+            resolver.lifetime = 1
+            resolver.timeout = 1
+            query = resolver.query(fqdn, 'SRV')
+            for rdata in query:
+                info = str(rdata).split()
+                servers.append({'name': info[3][:-1], 'port': info[2]})
+        except DNSException as e:
+            self._logger.warning("Could not resolve ",fqdn)
+        return servers
 
 
 class Discovery:
-    def __init__(self,*conf):
-        for __conf in conf:
-            self.set_config(__conf)
+    _discoveries={}
+    def __new__(cls):
+        global _discovery_singleton
+        if _discovery_singleton is None:
+            _discovery_singleton=super(Discovery, cls).__new__(cls)
+        return _discovery_singleton
 
-    def set_config(self,conf):
-        global _discoveries
-        #Get discoveries objects
-        if not _discoveries.get('mesos_dns'):
-            _discoveries['mesos_dns']=DiscoveryMesos(conf)
-        else:
-            _discoveries['mesos_dns'].set_config(conf)
+    def __init__(self):
+        self._config=Config()
+        self._logger=Logger()
+        if not self._discoveries.get('mesos_dns'):
+            self._discoveries['mesos_dns']=DiscoveryMesos()
+        if not self._discoveries.get('marathon_api'):
+            self._discoveries['marathon_api']=DiscoveryMarathon()
 
-        if not _discoveries.get('marathon_api'):
-            _discoveries['marathon_api']=DiscoveryMarathon(conf)
-        else:
-            _discoveries['marathon_api'].set_config(conf)
-
-        if not _discoveries.get('consul_dns'):
-            _discoveries['consul_dns']=DiscoveryConsul(conf)
-        else:
-            _discoveries['consul_dns'].set_config(conf)
-
-        global _config
-        if conf.get('default_discovery'):
-            discovery=conf.get('default_discovery')
-            if discovery in list(_discoveries.keys()):
-                _config['default_discovery']=discovery
-            else:
-                logger.error('Default discovery "'+discovery+'" is not present')
-                logger.debug('Conf=',conf)
+    def keys(self):
+        return self._discoveries.keys()
 
     def resolve(self,app):
-        __discovery=_config.get('default_discovery')
-        if app.get('discovery'):
-            discovery=app.get('discovery')
-            if discovery in list(_discoveries.keys()):
-                __discovery=discovery
-            else:
-                logger.warning('Discovery "'+discovery+'" is not present')
-                logger.debug('App=',app)
-                return {}
-        if _discoveries[__discovery].enabled():
-            return _discoveries[__discovery].resolve(app)
+        discovery=app.get('discovery',self._config.get('default_discovery'))
+        if discovery not in self.keys():
+            self._logger.warning('Discovery "',discovery,'" is not present')
+            return {}
+        if self._discoveries[discovery].enabled():
+            return self.compatible(self._discoveries[discovery].resolve(app))
         else:
-            logger.error('Discovery "'+__discovery+'" is disabled')
+            self._logger.error('Discovery "',discovery,'" is disabled')
         return {}
 
     def update_data(self):
-        global _discoveries
-        for d in list(_discoveries.keys()):
-            if _discoveries[d].enabled():
-                _discoveries[d].update_data()
+        self._config.update_apps()
+        for d in self.keys():
+            if self._discoveries[d].enabled():
+                self._discoveries[d].update_data()
+
+    def compatible(self,hosts):
+        compatible_hosts={}
+        if self._config.get('version') == '0.7':
+            for service in hosts.keys():
+                for host in hosts[service]:
+                    ports=host.get('tcp',[])
+                    if type(ports).__name__ == 'list':
+                        compatible_hosts[service]=[]
+                        for port in ports:
+                            compatible_hosts[service].append({'name':host['name'],
+                                                              'ip':host['ip'],
+                                                              'port':str(port)})
+                    else:
+                        compatible_hosts[service]={}
+                        for port in ports.keys():
+                            compatible_host=compatible_hosts[service].setdefault(port,[])
+                            compatible_host.append({'name':host['name'],
+                                                    'ip':host['ip'],
+                                                    'port':ports[port]})
+
+            return compatible_hosts
+        return hosts
 
 
 class DiscoveryMesos(DiscoveryTemplate):
-    _config={
-                'domain':'marathon.mesos'           # Default domain
-            }
-
-    def set_config(self,conf):
-        # For old version config
-        if conf.get('domain'):
-            self._config['domain']=conf.get('domain')
-            self._config['enabled']=True
-        # For current version config
-        if conf.get('mesos'):
-            _conf=conf['mesos']
-            for p in ['domain','enabled']:
-                if _conf.get(p):
-                    self._config[p]=_conf.get(p)
-
+    _config_section='mesos'
     def resolve(self,app):
         hosts = {}
-        services = app['services']
-        domain = self._config['domain']
+        services = app.get('services')
+        domain = self._config[self._config_section].get('domain')
         for service in services:
-            group = self.get_group(service, app)
+            group = service.get('group',app.get('group'))
+            if group is None:
+                self._logger.error('Group for service "{}" of config "{}" not found'.format(service['name'],app.get('conf_name')))
+                continue
             ports = service.get('ports')
             name = service['name']
             hosts[name] = {}
             serv = hosts[name]
-            if ports is not None:
-                hosts[name] = {}
-                serv = hosts[name]
-                for prot in ['tcp','udp']:
+            self._logger.debug('group=',group,' ports=',ports,' name=',name,' serv=',serv)
+            for prot in ['tcp','udp']:
+                if ports is not None:
                     for port_name in ports:
-                        for d in do_query('_'+port_name+'._'+name+'.'+group+'._'+prot+'.'+domain):
+                        for d in self.do_query_srv('_'+port_name+'._'+name+'.'+group+'._'+prot+'.'+domain):
                             hostname=d['name']
-                            if serv.get(hostname) is None:
-                                serv[hostname]={"name":hostname,"ip":d['ip']}
-                            if serv[hostname].get(prot) is None:
-                                serv[hostname][prot]={}
-                                serv[hostname][prot][port_name]=d['port']
-                hosts[name]=list(hosts[name].values())
-            else:
-                hosts[name]=do_query('_'+name+'.'+group+'._tcp.'+domain)
-
+                            serv.setdefault(hostname,{'name':hostname,
+                                                      'ip':self.do_query_a(hostname)})
+                            serv[hostname].setdefault(prot,{})
+                            serv[hostname][prot][port_name]=d['port']
+                else:
+                    for d in self.do_query_srv('_'+name+'.'+group+'._'+prot+'.'+domain):
+                        hostname=d['name']
+                        if serv.get(hostname) is None:
+                            serv[hostname]={'name':hostname,
+                                            'ip':self.do_query_a(hostname)}
+                        if serv[hostname].get(prot) is None:
+                            serv[hostname][prot]=[]
+                        serv[hostname][prot].extend([d['port']])
+            hosts[name]=list(serv.values())
         return hosts
 
 
 class DiscoveryMarathon(DiscoveryTemplate):
-    _config={
-                'host':'http://marathon.mesos:8080',
-                'force':True
-            }
-    __tasks = []
-    __ports = {}
-    def set_config(self,conf):
-        # For current version config
-        if conf.get('marathon'):
-            _conf=conf['marathon']
-            for p in ['host','enabled','force']:
-                if _conf.get(p):
-                    self._config[p]=_conf.get(p)
+    _config_section='marathon'
+    _tasks = []
+    _ports = {}
 
     def update_data(self):
+        hostname=self._config[self._config_section].get('host')
         try:
-            apps = requests.get(self._config['host']+'/v2/apps').json()['apps']
             ports = {}
-            for app in apps:
+            for app in requests.get(hostname+'/v2/apps').json()['apps']:
                 ports[app['id']] = {}
-                if app.get('container') is not None and app['container']['type'] == 'DOCKER':
+                if app.get('container') is not None and app['container'].get('type') == 'DOCKER':
                     ports[app['id']] = app['container']['docker'].get('portMappings',[])
-            self.__ports=ports
+            self._ports=ports
         except:
-            logger.warning('Apps ('+self._config['host']+'/v2/apps) request from Marathon API is failed')
+            self._logger.warning('Apps (',hostname,'/v2/apps) request from Marathon API is failed')
             pass
         try:
-            self.__tasks = requests.get(self._config['host']+'/v2/tasks').json()['tasks']
+            self._tasks = requests.get(hostname + '/v2/tasks').json()['tasks']
         except:
-            logger.warning('Tasks ('+self._config['host']+'/v2/tasks) request from Marathon API is failed')
+            self._logger.warning('Tasks (',hostname,'/v2/tasks) request from Marathon API is failed')
             pass
+
+    def _test_mask(self, mask, value):
+        return (mask.endswith('*') and value.startswith(mask[:-1])) or mask == value
 
     def resolve(self, app):
         hosts={}
-        serv_conf = app['services']
-        if not serv_conf:
-            serv_conf = [{'name':'*','ports':['*']}]
-        for serv in serv_conf:
-            # Convert xxx.yyy.zzz to /zzz/yyy/xxx/ format
-            group = '/'.join(['']+self.get_group(serv, app).split('.')[::-1]+[''])
-            mask = group+serv['name']
-            for task in self.__tasks:
-                if (mask.endswith('*') and task['appId'].startswith(mask[:-1])) or task['appId'] == mask:
-                    name='.'.join(task['appId'][len(group):].split('/')[::-1])
-                    if 'ports' in serv:
-                        hosts[name]={}
-                        for port in self.__ports[task['appId']]:
-                            for pp in serv['ports']:
-                                if (pp.endswith('*') and port['name'].startswith(pp[:-1])) or port['name'] == pp:
-                                    if hosts[name].get(task['host']) is None:
-                                        hosts[name][task['host']]={'name':task['host'],
-                                                                   'ip':do_query_a(task['host'])}
-                                    if hosts[name][task['host']].get(port['protocol']) is None:
-                                        hosts[name][task['host']][port['protocol']]={}
-                                    hosts[name][task['host']][port['protocol']][port['name']]=task['ports'][task['servicePorts'].index(port['servicePort'])]
-                        hosts[name]=list(hosts[name].values())
-                    else:
-                        hosts[name]=[]
-                        for port in self.__ports[task['appId']]:
-                            hosts[name].append({'name':task['host'],
-                                                'port':task['ports'][task['servicePorts'].index(port['servicePort'])],
-                                                'ip':do_query_a(task['host'])})
-
-        return hosts
-
-
-class DiscoveryConsul(DiscoveryTemplate):
-    _config={
-                'enabled':False,
-                'domain':None
-            }
-    def set_config(self,conf):
-        # For current version config
-        if conf.get('consul'):
-            _conf=conf['consul']
-            for p in ['domain','enabled']:
-                if _conf.get(p):
-                    self._config[p]=_conf.get(p)
-
-    def resolve(self,app):
-        hosts = {}
-        services = app['services']
-        domain = self._config['domain']
+        services = app.get('services')
+        if not services:
+            services = [{'name':'*','ports':['*']}]
         for service in services:
-            name = service['name']
-            hosts[name]=do_query('_'+name+'._tcp.'+domain)
+            # Convert xxx.yyy.zzz to /zzz/yyy/xxx/ format
+            group=service.get('group',app.get('group'))
+            if group is None:
+                self._logger.error('Group for service "{}" of config "{}" not found'.format(service['name'],app.get('conf_name')))
+                continue
+            group = '/'+'/'.join(group.split('.')[::-1])+'/'
+            service_mask = group + service['name']
+            for task in self._tasks:
+                if self._test_mask(service_mask,task['appId']):
+                    name='.'.join(task['appId'][len(group):].split('/')[::-1])
+                    hosts[name]={}
+                    serv = hosts[name]
+                    hostname=task['host']
+                    for task_port in self._ports[task['appId']]:
+                        prot=task_port['protocol']
+                        port_name=task_port['name']
+                        port=task['ports'][task['servicePorts'].index(task_port['servicePort'])]
+                        if 'ports' in service:
+                            for port_mask in service['ports']:
+                                if self._test_mask(port_mask,port_name):
+                                    serv.setdefault(hostname,{'name':hostname,
+                                                              'ip':self.do_query_a(hostname)})
+                                    serv[hostname].setdefault(prot,{})
+                                    serv[hostname][prot][port_name]=port
+                        else:
+                            serv.setdefault(hostname,{'name':hostname,
+                                                      'ip':self.do_query_a(hostname)})
+                            serv[hostname].setdefault(prot,[])
+                            serv[hostname][prot].extend([port])
+                    hosts[name]=list(serv.values())
         return hosts
-
-
-# Do DNS queries
-# Return array:
-# ["10.10.10.1", "10.10.10.2"]
-def do_query_a(fqdn):
-    servers = []
-    try:
-        resolver = dns.resolver.Resolver()
-        for a_rdata in resolver.query(fqdn, 'A'):
-            servers.append(a_rdata.address)
-    except DNSException as e:
-        logger.error("Could not resolve "+fqdn)
-
-    return servers
-
-
-# Do DNS queries
-# Return array:
-# [{"name": "f.q.d.n", "port": 8876, "ip": ["10.10.10.1", "10.10.10.2"]}]
-def do_query(fqdn):
-    servers = []
-    try:
-        resolver = dns.resolver.Resolver()
-        resolver.lifetime = 1
-        resolver.timeout = 1
-        query = resolver.query(fqdn, 'SRV')
-        for rdata in query:
-            info = str(rdata).split()
-            name = info[3][:-1]
-            port = info[2]
-            servers.append({'name': name, 'port': port, 'ip': do_query_a(name)})
-    except DNSException as e:
-        logger.error("Could not resolve " + fqdn)
-
-    return servers
