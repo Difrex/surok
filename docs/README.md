@@ -31,6 +31,7 @@ Service discovery for Apache Mesos.
 
 * Denis Zheleztsov <difrex.punk@gmail.com>
 * Denis Ryabyy <vv1r0x@gmail.com>
+* Evgeniy Vasilev <oren-ibc@yandex.ru>
 
 ## LICENSE
 

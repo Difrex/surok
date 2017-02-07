@@ -1,5 +1,5 @@
 # Surok
-[![Build Status](https://travis-ci.org/Difrex/surok.svg?branch=master)](https://travis-ci.org/Difrex/surok)
+[![Build Status](https://travis-ci.org/Surkoveds/surok.svg?branch=master)](https://travis-ci.org/Surkoveds/surok)
 
 Обнаружение сервисов для Apache Mesos.
 
@@ -17,10 +17,27 @@ cd build
 deb-пакет будет лежать в build/out
 
 Сборка базового docker-образа surok
+Ubuntu Xenial
 ```
 cd build
 ./build.sh surok_image
 ```
+Alpine image
+```
+cd build
+./build.sh alpine
+```
+CentOS image
+```
+cd build
+./build.sh centos
+```
+
+ENTRYPOINT : ```cd /opt/surok && pytho3 surok.py -c /etc/surok/conf/surok.json```
+
+## Документация
+
+[Wiki](https://github.com/Surkoveds/surok/wiki)
 
 ## Известные проблемы
 

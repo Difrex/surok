@@ -1,0 +1,22 @@
+{
+    "services": [
+        {
+            "name": "zzy0",
+            "ports": ["tname_aa", "tname_ab", "tname_ba", "tname_bb", "tname_d"]
+        },
+        {
+            "name": "zzy1",
+            "ports": ["tname_aa", "tname_ab", "tname_ba", "tname_bb"]
+        },
+        {
+            "name": "zzz0",
+            "ports": ["tname_aa", "tname_bb"]
+        },
+        {
+            "name": "zzz1"
+        }
+    ],
+    "template": "templates/selfcheck.jj2",
+    "dest": "selfcheck",
+    "reload_cmd": "/bin/echo selfcheck ok"
+}
