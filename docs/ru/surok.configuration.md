@@ -9,6 +9,10 @@
         "force": true,
         "host": "http://marathon.mesos:8080"
     },
+    "mesos":{
+        "enabled": true,
+        "domain": "marathon.mesos"
+    },
     "default_discovery": "mesos_dns",
     "confd": "/etc/surok/conf.d",
     "wait_time": 20,
