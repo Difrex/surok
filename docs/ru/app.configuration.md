@@ -10,6 +10,8 @@
         "ports": ["web", "socket"]
       }
     ],
+    "discovery": "mesos_dns",
+    "group": "dev.web",
     "conf_name": "kiosk",
     "template": "/etc/surok/templates/kiosk.jj2",
     "dest": "/etc/nginx/sites-available/kioskservice.conf",
@@ -31,3 +33,5 @@
     В reload_cmd можно использовать переменные окружения:
     ```"reload_cmd": "/usr/bin/killall -9 calc || true && /usr/local/bin/calc -c /app/calc.conf ${CALC_NUM}"```
 * run_cmd(v0.6) - array. Список с командой на выполнение. Используется внутри контейнера вместо reload_cmd.
+* discovery - Опциональный. переопределяет метод обнаружения сервисов для приложения
+* group - Опциональный. Группа по-умолчанию.

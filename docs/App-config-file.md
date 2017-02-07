@@ -10,6 +10,8 @@ conf.d/myapp.json
         "ports": ["web", "socket"]
       }
     ],
+    "discovery": "mesos_dns",
+    "group": "dev.web",
     "conf_name": "kiosk",
     "template": "/etc/surok/templates/kiosk.jj2",
     "dest": "/etc/nginx/sites-available/kioskservice.conf",
@@ -25,3 +27,5 @@ conf.d/myapp.json
 * **template**. Jinja2 template location.
 * **dest**. Destination config path.
 * **reload_cmd**. Command to execute if generated config is changed.
+* **discovery**. Use custom discovery for app. 
+* **group**. Default group for all required services.
