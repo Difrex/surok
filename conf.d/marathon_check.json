@@ -1,0 +1,12 @@
+{
+    "services": [
+        {
+            "name": "zzy*",
+            "ports": ["tname_a*"]
+        }
+    ],
+    "template": "templates/selfcheck.jj2",
+    "dest": "selfcheck",
+    "reload_cmd": "/bin/echo selfcheck ok",
+    "discovery": "marathon_api"
+}

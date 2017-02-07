@@ -1,16 +1,13 @@
 {
+    "version": "0.8",
     "marathon": {
         "enabled": false,
         "restart": false,
         "force": true,
         "host": "http://marathon.mesos:8080"
     },
-    "consul": {
+    "mesos": {
         "enabled": false,
-        "domain": "service.dc1.consul"
-    },
-    "mesos":{
-        "enabled": true,
         "domain": "marathon.mesos"
     },
     "default_discovery": "mesos_dns",
@@ -18,7 +15,6 @@
     "wait_time": 20,
     "lock_dir": "/var/tmp",
     "loglevel": "info",
-    "container": false,
     "memcached": {
         "enabled": false,
         "discovery": {

@@ -10,75 +10,39 @@ from surok.templates import gen
 from surok.discovery import Discovery
 from surok.system import reload_conf
 from surok.logger import Logger
+from surok.config import Config
 
-logger=Logger()
-# Load base configurations
-surok_conf = '/etc/surok/conf/surok.json'
+logger = Logger()
 
 # Command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', help='surok.json path')
 args = parser.parse_args()
-if args.config:
-    surok_conf = args.config
 
-# Read config file
-f = open(surok_conf, 'r')
-conf = json.loads(f.read())
-f.close()
-
-
-# Get app configurations
-# Return list of patches to app discovery configuration
-def get_configs():
-    confs = [f for f in listdir(conf['confd']) if isfile(
-        join(conf['confd'], f))]
-    return sorted(confs)
-
-
-# Get Surok App configuration
-# Read app conf from file and return dict
-def load_app_conf(app):
-    # Load OS environment to app_conf
-    f = open(conf['confd'] + '/' + app)
-    c = json.loads(f.read())
-    f.close()
-
-    c['env'] = os.environ
-
-    return c
-
-logger.set_level(conf.get('loglevel','info'))
+# Load base configurations
+config = Config(args.config if args.config else '/etc/surok/conf/surok.json')
 
 # Main loop
-###########
+#
 
-discovery=Discovery()
+discovery = Discovery()
 
 while 1:
-    confs = get_configs()
-
     # Update config from discovery object
-    discovery.set_config(conf)
-
-    # Update discovery data
     discovery.update_data()
+    for app in config.apps:
 
-    for app in confs:
-        app_conf = load_app_conf(app)
-
-        # Resolve services
-        app_hosts = discovery.resolve(app_conf)
+        app_hosts = discovery.resolve(app)
 
         # Populate my dictionary
         my = {"services": app_hosts,
-              "conf_name": app_conf['conf_name']}
+              "conf_name": app['conf_name']}
 
-        logger.debug('my=',my)
+        logger.debug('my=', my)
 
         # Generate config from template
-        service_conf = gen(my, app_conf['template'])
+        service_conf = gen(my, app['template'])
 
-        reload_conf(service_conf, app_conf, conf, app_hosts)
+        reload_conf(service_conf, app, config, app_hosts)
 
-    sleep(conf['wait_time'])
+    sleep(config['wait_time'])

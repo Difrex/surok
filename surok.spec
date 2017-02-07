@@ -25,10 +25,12 @@ install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/surok/logger.py %{buildr
 install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/surok/system.py %{buildroot}/opt/surok/surok
 install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/surok/discovery.py %{buildroot}/opt/surok/surok
 install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/surok/templates.py %{buildroot}/opt/surok/surok
+install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/surok/config.py %{buildroot}/opt/surok/surok
 install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/surok.py %{buildroot}/opt/surok
 mkdir -p %{buildroot}/etc/surok/{conf,conf.d,templates}
 install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/conf/surok.json %{buildroot}/etc/surok/conf
-install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/conf.d/selfcheck.json %{buildroot}/etc/surok/conf.d
+install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/conf.d/self_check.json %{buildroot}/etc/surok/conf.d
+install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/conf.d/marathon_check.json %{buildroot}/etc/surok/conf.d
 install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/templates/selfcheck.jj2 %{buildroot}/etc/surok/templates
 install -p -m 644 /root/rpmbuild/BUILD/surok-%{version}/requriments.txt %{buildroot}/opt/surok
 
@@ -59,7 +61,11 @@ cd /opt/surok && pip3 install -r requriments.txt
 /opt/surok/surok/templates.py
 /opt/surok/surok/templates.pyc
 /opt/surok/surok/templates.pyo
-/etc/surok/conf.d/selfcheck.json
+/opt/surok/surok/config.py
+/opt/surok/surok/config.pyc
+/opt/surok/surok/config.pyo
+/etc/surok/conf.d/self_check.json
+/etc/surok/conf.d/marathon_check.json
 /etc/surok/templates/selfcheck.jj2
 /opt/surok/requriments.txt
 %defattr(-,root,root,-)
