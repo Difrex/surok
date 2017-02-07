@@ -1,10 +1,10 @@
-# Surok main config file
+# Surok main config file (0.8.x)
 
-Default location is /etc/surok/conf/surok.json
+Default location is **/etc/surok/conf/surok.json**
 
-conf/surok.json
 ```
 {
+    "version": "0.8"
     "marathon": {
         "enabled": false,
         "restart": false,
@@ -24,7 +24,6 @@ conf/surok.json
     "wait_time": 20,
     "lock_dir": "/var/tmp",
     "loglevel": "info",
-    "container": false,
     "memcached": {
         "enabled": false,
         "discovery": {
@@ -36,10 +35,56 @@ conf/surok.json
     }
 }
 ```
-* **marathon section**. Restarting app over marathon api if config changed. Disabled by default.
-* **confd**. Directory where located configs apps.
-* **domain**. Domain served by mesos-dns.
-* **lock_dir**. Directory where surok writes temporary configs after resolving.
-* **wait_time**. Sleep time in main loop.
-* **container**. Not implemented.
-* **memcached section**. Memcached support. Disabled by default.
+
+## Config file options
+* **version** - *string. Optional. "0.7" by default.*
+Config files and templates version. Accept "0.7" or "0.8".
+  * "0.7" - config files <= 0.7.х version
+  * "0.8" - >= 0.8.x config files version
+
+##### 0.8 version
+* **marathon**, **mesos**, **consul**, **memcached** - *dict/hash. Optional. '{"enable":false}'. by default*
+Surok working with folowing systems. If system is disabled parameters will be ignored.
+  * **enable** - *boolean. Optional. false by default*
+    Enable/disable system for usage.
+
+    Specific variables:
+    * For Marathon API "marathon"
+      * **force** - *boolean. Optional. true by default*
+        Force restart container over API.
+      * **restart** - *boolean. Optional. false by default*
+        Enable/disable restarting container
+      * **host** - *string. Optional. "http://marathon.mesos:8080" by default*
+        Marathon address.
+    * For Consul "consul"
+      * **domain** - *string. Required.*
+        Consul private domain
+    * For mesos-dns "mesos"
+      * **domain** - *string. Optional. "marathon.mesos" by default*
+        mesos-dns private domain
+    * For Memcached "memcached"
+      * **hosts** - memcached hosts
+      * **discovery**
+        * **enabled** - boolean. Enable/disable disovery memcached service
+        * **service** - string. memcached app name
+        * **group** - string. memcached app group
+* **default_discovery** - *string. Optional. "mesos_dns" by default*
+  Accept values:
+  * "mesos_dns" - mesos-dns
+  * "marathon_api"- Marathon API
+  * "consul_dns" - Consul
+* **confd** - *strig. Required.*
+  Path to directory with app config files.
+* **wait_time** - *int. Required.*
+  Time in seconds how much Surok waits before starting to re-do the requests for service discovery
+* **lock_dir** - *string. Required.*
+  Path to directory where Surok write lock-files.
+* **loglevel** - *string. Optional. "info" by default*
+  Logleve. Accept values: "debug", "info", "warning", "error"
+
+##### < 0.8 versions
+
+* **marathon**
+  * **enabled** - boolean. Enable/disable container restart. Renamed to "restart" in 0.8 version.
+* **domain** - string. mesos-dns private domain. Moved to "mesos" hashtable in 0.8 version.
+  Discovery over mesos-dns enabled all times.
