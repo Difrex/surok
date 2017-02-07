@@ -11,10 +11,6 @@ Default location is **/etc/surok/conf/surok.json**
         "force": true,
         "host": "http://marathon.mesos:8080"
     },
-    "consul": {
-        "enabled": false,
-        "domain": "service.dc1.consul"
-    },
     "mesos":{
         "enabled": true,
         "domain": "marathon.mesos"
@@ -56,9 +52,6 @@ Surok working with folowing systems. If system is disabled parameters will be ig
         Enable/disable restarting container
       * **host** - *string. Optional. "http://marathon.mesos:8080" by default*
         Marathon address.
-    * For Consul "consul"
-      * **domain** - *string. Required.*
-        Consul private domain
     * For mesos-dns "mesos"
       * **domain** - *string. Optional. "marathon.mesos" by default*
         mesos-dns private domain
@@ -72,7 +65,6 @@ Surok working with folowing systems. If system is disabled parameters will be ig
   Accept values:
   * "mesos_dns" - mesos-dns
   * "marathon_api"- Marathon API
-  * "consul_dns" - Consul
 * **confd** - *strig. Required.*
   Path to directory with app config files.
 * **wait_time** - *int. Required.*

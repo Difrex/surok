@@ -2,7 +2,7 @@ surok (0.8) testing; urgency=medium
 
   * Version bump
 	* new config structure
-	* Basic consul support
+	* Port type
 	* Discovery over Marathon API
 
  -- Denis Zheleztsov <difrex.punk@gmail.com>  Tue, 07 Feb 2017 12:41:52 +0300

@@ -57,7 +57,6 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Feb  7 2017 Denis Zheleztsov <difrex.punk@gmail.com>
 - New major release
 - Discovery over marathon api
-- Basic Consul support
 * Mon Nov 14 2016 Denis Zheleztsov <difrex.punk@gmail.com> - 
 - Initial build.
 

@@ -9,14 +9,6 @@
         "force": true,
         "host": "http://marathon.mesos:8080"
     },
-    "consul": {
-        "enabled": false,
-        "domain": "service.dc1.consul"
-    },
-    "mesos":{
-        "enabled": true,
-        "domain": "marathon.mesos"
-    },
     "default_discovery": "mesos_dns",
     "confd": "/etc/surok/conf.d",
     "wait_time": 20,
@@ -53,9 +45,6 @@
         Вкл/выкл. рестарта контейнера
       * **host** - *string. Не обязательный. По умолчанию "http://marathon.mesos:8080".*
         Адрес Marathon.
-    * для Consul "consul"
-      * **domain** - *string. Обязательный.*
-        Приватный домен Consul
     * для mesos DNS "mesos"
       * **domain** - *string. Не обязательный. По умолчанию "marathon.mesos".*
         Приватный домен Mesos DNS
@@ -70,7 +59,6 @@
   Может принимать значения:
   * "mesos_dns" - Mesos DNS
   * "marathon_api"- Marathon API
-  * "consul_dns" - Consul
 * **confd** - *strig. Обязательный.*
   Абсолютный путь до директории с конфигурационными файлами приложений.
 * **wait_time** - *int. Обязательный.*
