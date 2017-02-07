@@ -1,6 +1,6 @@
 Summary: Simple service discovery for Apache Mesos clusters
 Name: surok
-Version: 0.7.4.3
+Version: 0.8
 Release: 1
 License: BSD
 Group: admin
@@ -73,6 +73,10 @@ cd /opt/surok && pip3 install -r requriments.txt
 
 
 %changelog
+* Tue Feb  7 2017 Denis Zheleztsov <difrex.punk@gmail.com>
+- New major release
+- Discovery over marathon api
+- Basic Consul support
 * Mon Nov 14 2016 Denis Zheleztsov <difrex.punk@gmail.com> - 
 - Initial build.
 
