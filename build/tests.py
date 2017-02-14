@@ -205,7 +205,7 @@ class Test02_LoadConfig(unittest.TestCase):
                 'marathon_check.json':'08a382d14285feb1f22b92ba597ecf73d654a2e0'
             }
         ]
-        config=Config()
+        config=Config({'confd':'/usr/share/surok/conf.d'})
         for test in tests:
             config.set('env',test['env'])
             config.update_apps()
@@ -241,7 +241,7 @@ class Test02_LoadConfig(unittest.TestCase):
             }
 
         }
-        config=Config()
+        config=Config({'confd':'/usr/share/surok/conf.d'})
         for name01 in tests.keys():
             oldvalue=config.get(name01)
             for test_name in tests[name01].keys():
@@ -351,6 +351,7 @@ class Test03_Discovery(unittest.TestCase):
             }
         }
         config=Config('/etc/surok/conf/surok.json')
+        config.set_config({'confd':'/usr/share/surok/conf.d'})
         config.set('env',{'SUROK_DISCOVERY_GROUP':'xxx.yyy'})
         discovery=Discovery()
         for mesos_enabled in tests.keys():

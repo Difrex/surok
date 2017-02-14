@@ -1,7 +1,7 @@
 conf/surok.json etc/surok/conf
-conf.d/self_check.json etc/surok/conf.d
-conf.d/marathon_check.json etc/surok/conf.d
-templates/selfcheck.jj2 etc/surok/templates
+conf.d/self_check.json usr/share/surok/conf.d
+conf.d/marathon_check.json usr/share/surok/conf.d
+templates/selfcheck.jj2 usr/share/surok/templates
 surok/templates.py opt/surok/surok
 surok/system.py opt/surok/surok
 surok/logger.py opt/surok/surok
