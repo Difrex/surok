@@ -5,19 +5,18 @@ conf.d/myapp.json
 {
     "services": [
       {
-        "name": "myapp",
-        "group": "backend.production",
-        "ports": ["proxy", "api"]
-      },
-      {
-        "name": "nginx",
-        "group": "frontend.production"
+        "name": "kioskservice",
+        "group": "production.romania",
+        "ports": ["web", "socket"]
       }
     ],
-    "conf_name": "myapp_backend_production",
-    "template": "/etc/surok/templates/myapp.jj2",
-    "dest": "/etc/myapp/myapp.cfg",
-    "reload_cmd": "killall -9 myapp; /usr/local/bin/myapp -config /etc/myapp/myapp.cfg"
+    "discovery": "mesos_dns",
+    "group": "dev.web",
+    "conf_name": "kiosk",
+    "template": "/etc/surok/templates/kiosk.jj2",
+    "dest": "/etc/nginx/sites-available/kioskservice.conf",
+    "reload_cmd": "/sbin/nginx -t && /bin/systemctl reload nginx",
+    "run_cmd": ["/usr/bin/node", "-c", "config.json"]
 }
 ```
 * **services**. List of hashes with required services for app.
@@ -28,3 +27,5 @@ conf.d/myapp.json
 * **template**. Jinja2 template location.
 * **dest**. Destination config path.
 * **reload_cmd**. Command to execute if generated config is changed.
+* **discovery**. Use custom discovery for app. 
+* **group**. Default group for all required services.
