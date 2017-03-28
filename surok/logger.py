@@ -5,12 +5,9 @@ import sys
 import json
 import time
 
-# Logger singleton link
-_logger_singleton = None
-
-
 
 class Logger:
+
     """ Public Logger oblect
     ==================================================
     .set_level(level) - set level messages

@@ -7,7 +7,9 @@ from dns.exception import DNSException
 from .config import *
 from .logger import *
 
+
 class DiscoveryTemplate:
+
     def __init__(self):
         if not hasattr(self, '_config'):
             self._config = Config()
@@ -54,6 +56,7 @@ class DiscoveryTemplate:
 class Discovery:
     _instance = None
     _discoveries = {}
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(Discovery, cls).__new__(cls)
@@ -107,7 +110,7 @@ class Discovery:
                         for port in ports.keys():
                             compatible_host = compatible_hosts[service].setdefault(port, [])
                             compatible_host.append({'name': host['name'],
-                                                    'ip': host['ip'],
+                                                      'ip': host['ip'],
                                                     'port': ports[port]})
 
             return compatible_hosts
@@ -124,7 +127,8 @@ class DiscoveryMesos(DiscoveryTemplate):
         for service in services:
             group = service.get('group', app.get('group'))
             if group is None:
-                self._logger.error('Group for service "{}" of config "{}" not found'.format(service['name'], app.get('conf_name')))
+                self._logger.error(
+                    'Group for service "{}" of config "{}" not found'.format(service['name'], app.get('conf_name')))
                 continue
             name = service['name']
             hosts[name] = {}
@@ -164,18 +168,15 @@ class DiscoveryMarathon(DiscoveryTemplate):
             for app in requests.get(hostname + '/v2/apps').json()['apps']:
                 ports[app['id']] = {}
                 if app.get('container') is not None and app['container'].get('type') == 'DOCKER':
-                    ports[app['id']] = app['container'][
-                        'docker'].get('portMappings', [])
+                    ports[app['id']] = app['container']['docker'].get('portMappings', [])
             self._ports = ports
         except:
-            self._logger.warning(
-                'Apps (', hostname, '/v2/apps) request from Marathon API is failed')
+            self._logger.warning('Apps (', hostname, '/v2/apps) request from Marathon API is failed')
             pass
         try:
             self._tasks = requests.get(hostname + '/v2/tasks').json()['tasks']
         except:
-            self._logger.warning(
-                'Tasks (', hostname, '/v2/tasks) request from Marathon API is failed')
+            self._logger.warning('Tasks (', hostname, '/v2/tasks) request from Marathon API is failed')
             pass
 
     def _test_mask(self, mask, value):
@@ -190,7 +191,8 @@ class DiscoveryMarathon(DiscoveryTemplate):
             # Convert xxx.yyy.zzz to /zzz/yyy/xxx/ format
             group = service.get('group', app.get('group'))
             if group is None:
-                self._logger.error('Group for service "{}" of config "{}" not found'.format(service['name'], app.get('conf_name')))
+                self._logger.error(
+                    'Group for service "{}" of config "{}" not found'.format(service['name'], app.get('conf_name')))
                 continue
             group = '/' + '/'.join(group.split('.')[::-1]) + '/'
             service_mask = group + service['name']
@@ -205,16 +207,16 @@ class DiscoveryMarathon(DiscoveryTemplate):
                         port_name = task_port['name']
                         port = task['ports'][task['servicePorts'].index(task_port['servicePort'])]
                         if prot in service:
-                            for port_mask in service.get(prot,[]):
+                            for port_mask in service.get(prot, []):
                                 if self._test_mask(port_mask, port_name):
                                     serv.setdefault(
                                         hostname, {'name': hostname,
-                                                   'ip': self.do_query_a(hostname)})
+                                                     'ip': self.do_query_a(hostname)})
                                     serv[hostname].setdefault(prot, {})
                                     serv[hostname][prot][port_name] = port
                         else:
                             serv.setdefault(hostname, {'name': hostname,
-                                                       'ip': self.do_query_a(hostname)})
+                                                         'ip': self.do_query_a(hostname)})
                             serv[hostname].setdefault(prot, [])
                             serv[hostname][prot].extend([port])
                     hosts[name] = list(serv.values())

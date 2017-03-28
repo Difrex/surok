@@ -18,7 +18,9 @@ Public Apps object
 ==================================================
 '''
 
+
 class Apps:
+
     def __init__(self):
         if not hasattr(self, '_config'):
             self._config = Config()
@@ -52,27 +54,29 @@ class Apps:
             _restart = False
             for conf in [{'env': x, 'value': self._render(my, app['environments'][x])} for x in app['environments']]:
                 if self._store.check_update(conf):
-                    _restart=True
+                    _restart = True
                     os.environ[conf['env']] = conf['value']
             for conf in [{'dest': x, 'value': self._render(my, app['files'][x])} for x in app['files']]:
                 if self._store.check_update(conf):
-                    _restart=True
+                    _restart = True
                     self._logger.info("Write new configuration of ", conf.get('dest'))
                     try:
                         f = open(conf.get('dest'), 'w')
                         f.write(conf.get('value'))
                         f.close()
                     except OSError as err:
-                        self._logger.error('Config file {0} open or write error. OS error : {1}'.format(conf.get('dest'), err))
+                        self._logger.error(
+                            'Config file {0} open or write error. OS error : {1}'.format(conf.get('dest'), err))
                         pass
                     except err:
-                        self._logger.error('Config file {0} open or write error. Error : {1}'.format(conf.get('dest'), err))
+                        self._logger.error(
+                            'Config file {0} open or write error. Error : {1}'.format(conf.get('dest'), err))
                         pass
             if _restart:
                 if self._config['marathon']['restart']:
                     self._restart_self_in_marathon()
                 else:
-                    self._logger.info('Restart ', app.get('reload_cmd') , ' app.\n', os.popen(app['reload_cmd']).read())
+                    self._logger.info('Restart ', app.get('reload_cmd'), ' app.\n', os.popen(app['reload_cmd']).read())
         self._store.clear()
 
     def _render(self, my, temp):
@@ -87,19 +91,23 @@ class Apps:
                 self._logger.error('Render Jinja2 error. Unknown error')
             return data
 
-
     def _restart_self_in_marathon(self):
         env = os.environ.get('MARATHON_APP_ID')
         if env:
-            r = requests.post('http://' + self._config['marathon']['host'] + '/v2/apps/' + env + '/restart', data={'force': self._config['marathon']['force']})
+            r = requests.post('http://' + self._config['marathon']['host'] + '/v2/apps/' + env + '/restart',
+                              data={'force': self._config['marathon']['force']})
             if r.status_code != 200:
-                self._logger.error('Restart container {0} failed. {1}'.format(env, raise_for_status()))
+                self._logger.error(
+                    'Restart container {0} failed. {1}'.format(env, raise_for_status()))
         else:
-            logger.error('Restart self container failed. Cannot find MARATHON_APP_ID.')
+            logger.error(
+                'Restart self container failed. Cannot find MARATHON_APP_ID.')
+
 
 class LoadModules:
     _instance = None
     _get_module = True
+
     def __new__(cls, **pars):
         if cls._instance is None:
             cls._instance = super(LoadModules, cls).__new__(cls)

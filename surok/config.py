@@ -6,7 +6,9 @@ import json
 import os
 from .logger import *
 
+
 class _ConfigTemplate(dict):
+
     """ Test values
     ==================================================
     key - key
@@ -15,6 +17,7 @@ class _ConfigTemplate(dict):
     type_par - additional parameters for test
     """
     _conf = None
+
     def _init_conf(self, params):
         conf = {}
         for k in params.keys():
@@ -37,7 +40,8 @@ class _ConfigTemplate(dict):
         for c in conf_data:
             self.set_config(c)
 
-    # Testing testconf with params data, and update oldconf with data from testconf
+    # Testing testconf with params data, and update oldconf with data from
+    # testconf
     def _set_conf_params(self, oldconf, testconf, params):
         conf = oldconf.copy() if oldconf else {}
         for key in testconf:
@@ -56,7 +60,8 @@ class _ConfigTemplate(dict):
                     if type(testvalue).__name__ == 'dict':
                         testvalue = testvalue.items()
                     else:
-                        self._logger.warning('Parameter "{}" must be "dict" type'.format(key))
+                        self._logger.warning(
+                            'Parameter "{}" must be "dict" type'.format(key))
                         continue
                 elif type(testvalue).__name__ != 'list':
                     testvalue = [testvalue]
@@ -67,7 +72,8 @@ class _ConfigTemplate(dict):
                     if self._test_value(key_testitem, testitem, param):
                         if 'dict' in type_param:
                             if param.get('params'):
-                                res = self._set_conf_params(oldvalue, testitem, param.get('params'))
+                                res = self._set_conf_params(
+                                    oldvalue, testitem, param.get('params'))
                                 if res is not None:
                                     resvalue.append(res)
                                     reskeys.append(key_testitem)
@@ -75,12 +81,13 @@ class _ConfigTemplate(dict):
                             resvalue.append(testitem)
                             reskeys.append(key_testitem)
                 if 'anykeys' in type_param:
-                    resvalue = dict([(reskeys.pop(0),x) for x in resvalue])
+                    resvalue = dict([(reskeys.pop(0), x) for x in resvalue])
                 elif 'list' not in type_param:
                     resvalue = list([None] + resvalue).pop()
                 if resvalue is not None and 'do' in type_param:
                     if not self._do_type_set(key, resvalue, param):
-                        self._logger.warning('Parameter "', key, '" current "', resvalue, '" type is "', type(resvalue).__name__, '" testing failed')
+                        self._logger.warning(
+                            'Parameter "', key, '" current "', resvalue, '" type is "', type(resvalue).__name__, '" testing failed')
                         resvalue = None
                 if resvalue is not None:
                     conf[key] = resvalue
@@ -88,14 +95,17 @@ class _ConfigTemplate(dict):
 
     def _test_value(self, key, value, param):
         type_param = param.get('type')
-        type_value = [x for x in type_param if x in ['str', 'int', 'bool', 'dict']]
+        type_value = [
+            x for x in type_param if x in ['str', 'int', 'bool', 'dict']]
         if type_value:
             if type(value).__name__ not in type_value:
-                self._logger.error('Parameter "', key, '" must be ', type_value,' types, current "', value, '" (', type(value).__name__, ')')
+                self._logger.error('Parameter "', key, '" must be ', type_value,
+                                   ' types, current "', value, '" (', type(value).__name__, ')')
                 return False
             if 'value' in type_param:
                 if value not in param.get('values', []):
-                    self._logger.error('Value "', value, '" of key "', key, '" unknown')
+                    self._logger.error(
+                        'Value "', value, '" of key "', key, '" unknown')
                     return False
             if 'dir' in type_param:
                 if not os.path.isdir(value):
@@ -175,6 +185,7 @@ class _ConfigTemplate(dict):
 
 
 class Config(_ConfigTemplate):
+
     """ Public Config object
     ==================================================
     .set_config(conf_data) - set config data
@@ -186,7 +197,7 @@ class Config(_ConfigTemplate):
     .apps - Dict of AppConfig oblects
     """
     _instance = None
-    apps={}
+    apps = {}
     _params = {
         'marathon': {
             'params': {
@@ -295,12 +306,12 @@ class Config(_ConfigTemplate):
             'type': ['str', 'do'],
             'do': 'set_loglevel'
         },
-        'default_store':{
+        'default_store': {
             'value': 'memory',
             'type': ['str', 'value'],
             'values': ['memory', 'files', 'memcached']
         },
-        'domain':{
+        'domain': {
             'type': ['str']
         }
     }
@@ -332,14 +343,14 @@ class Config(_ConfigTemplate):
         return False
 
     def update_apps(self):
-        self.apps={}
+        self.apps = {}
         for app_conf in sorted([os.path.join(self.get('confd'), f) for f in os.listdir(self.get('confd')) if os.path.isfile(os.path.join(self.get('confd'), f))]):
             app = AppConfig(app_conf)
             self.apps[app['conf_name']] = app
 
 
-
 class AppConfig(_ConfigTemplate):
+
     """ Public AppConfig object
     ==================================================
     .set_config(conf_data) - set config data
@@ -390,7 +401,7 @@ class AppConfig(_ConfigTemplate):
         'discovery': {
             'type': ['str']
         },
-        'store':{
+        'store': {
             'value': 'memory',
             'type': ['str', 'value'],
             'values': ['memory', 'files', 'memcached']
@@ -413,15 +424,17 @@ class AppConfig(_ConfigTemplate):
 
     def set_config(self, conf_data):
         super().set_config(conf_data)
-        self._conf.setdefault('discovery', self._config.get('default_discovery'))
+        self._conf.setdefault(
+            'discovery', self._config.get('default_discovery'))
         self._conf.setdefault('store', self._config.get('default_store'))
         if 'group' not in self._conf:
             self._conf['group'] = self._get_default_group()
         if 'dest' in self._conf and 'template' in self._conf:
-            self._conf['files'].update({self._conf.get('dest'): '{{ mod.template(mod.from_file(\'' + self._conf.get('template') + '\')) }}'})
-        for service in self._conf.get('services',{}):
+            self._conf['files'].update(
+                {self._conf.get('dest'): '{{ mod.template(mod.from_file(\'' + self._conf.get('template') + '\')) }}'})
+        for service in self._conf.get('services', {}):
             if service.get('ports'):
-                service.setdefault('tcp',[])
+                service.setdefault('tcp', [])
                 service['tcp'].extend(service.get('ports'))
         if type(conf_data).__name__ == 'str' and 'conf_name' not in self._conf:
             self._conf['conf_name'] = os.path.basename(conf_data)

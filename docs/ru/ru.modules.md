@@ -12,7 +12,8 @@
 но при этом они могут быть использованы в рамках одного модуля.
 
 Пример:
-'''def from_file(self, path):
+```
+def from_file(self, path):
     try:
         f = open(path, 'r')
         data = f.read()
@@ -24,5 +25,5 @@
     except:
         self._logger.error('Module from_file. File {0} open or read error. Unknown error.'.format(path))
         pass
-'''
+```
 Каждая функция должны иметь параметр self, так как если бы она была атрибутов класса.
