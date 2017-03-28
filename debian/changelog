@@ -1,3 +1,13 @@
+surok (0.8.1) testing; urgency=medium
+
+  * New config structure
+  * Full refactoring code
+    * Update discovery for memcached
+    * Add memory store type
+    * Add support modules
+
+ -- Evgeniy Vasilev <oren-ibc@yandex.ru>  Mon, 27 Mar 2017 17:54:33 +0300
+
 surok (0.8) testing; urgency=medium
 
   * Version bump

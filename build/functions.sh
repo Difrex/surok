@@ -56,13 +56,18 @@ function build_surok_base() {
 		cat > Dockerfile.surok <<EOF
 FROM ubuntu:xenial
 
-MAINTAINER Denis Zheleztsov <difrex.punk@gmail.com>
+MAINTAINER Evgeniy Vasilev <oren-ibc@yandex.ru>
 
 ADD out/${DEB} /tmp
-RUN apt-get update && apt-get install -y ${SUROK_DEPS} python3-memcache
-RUN dpkg -i /tmp/${DEB}
-RUN apt-get clean
-RUN rm -rf /tmp/*
+RUN apt update && \
+    apt install -y ${SUROK_DEPS} python3-pip && \
+    dpkg -i /tmp/${DEB} && \
+    pip3 install --upgrade pip && \
+    pip3 install --upgrade python-memcached && \
+    apt -y purge python3-pip && \
+    apt -y --purge autoremove && \
+    apt clean && \
+    rm -rf /tmp/*
 
 ENTRYPOINT cd /opt/surok && python3 surok.py -c /etc/surok/conf/surok.json
 EOF

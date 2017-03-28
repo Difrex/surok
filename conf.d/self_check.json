@@ -16,7 +16,7 @@
             "name": "zzz1"
         }
     ],
-    "template": "templates/selfcheck.jj2",
-    "dest": "selfcheck",
+    "template": "/usr/share/surok/templates/self_check.jj2",
+    "dest": "/tmp/test_old",
     "reload_cmd": "/bin/echo selfcheck ok"
 }

@@ -1,0 +1,22 @@
+{
+    "version": "0.8",
+    "marathon": {
+        "enabled": false
+    },
+    "mesos": {
+        "enabled": false
+    },
+    "files": {
+        "enabled": false
+    },
+    "default_discovery": "mesos_dns",
+    "confd": "/usr/share/surok/conf.d",
+    "wait_time": 20,
+    "loglevel": "info",
+    "memcached": {
+        "enabled": false,
+        "discovery":{
+            "enabled": false
+        }
+    }
+}

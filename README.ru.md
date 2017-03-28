@@ -41,4 +41,4 @@ ENTRYPOINT : ```cd /opt/surok && pytho3 surok.py -c /etc/surok/conf/surok.json``
 
 ## Известные проблемы
 
-* В Debian Jessie поломан пакет python3-memcache. Бэкпортируйте свежую версию из testing (>= 1.57).
+* В Debian Jessie поломан пакет python3-memcache. Бэкпортируйте свежую версию из testing (>= 1.58).
