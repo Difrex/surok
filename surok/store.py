@@ -7,7 +7,7 @@ from .discovery import *
 import os
 import hashlib
 import json
-import memcache
+import importlib
 
 
 class Store(dict):
@@ -245,7 +245,7 @@ class StoreMemcached(_StoreTemplate):
     _mc = None
     _enabled = False
     _hosts = []
-
+    _mod_memcache = None
     def __init__(self, *args):
         super().__init__(*args)
         self._enabled = self._config['memcached']['enabled']
@@ -257,8 +257,10 @@ class StoreMemcached(_StoreTemplate):
     def _reconnect(self):
         if self._hosts:
             if self._mc is None:
+                if self._mod_memcache is None:
+                    self._mod_memcache = importlib.import_module('memcache')
                 try:
-                    self._mc = memcache.Client(self._hosts)
+                    self._mc = self._module.Client(self._hosts)
                     self._enabled = True
                 except:
                     self._logger.error('Create memcached object failed')
