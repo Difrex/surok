@@ -260,7 +260,7 @@ class StoreMemcached(_StoreTemplate):
                 if self._mod_memcache is None:
                     self._mod_memcache = importlib.import_module('memcache')
                 try:
-                    self._mc = self._module.Client(self._hosts)
+                    self._mc = self._mod_memcache.Client(self._hosts)
                     self._enabled = True
                 except:
                     self._logger.error('Create memcached object failed')
