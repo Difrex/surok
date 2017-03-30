@@ -1,0 +1,21 @@
+{
+    "marathon": {
+        "force": false,
+        "host": "http://marathon.mesos:8080",
+        "enabled": false
+    },
+    "confd": "/etc/surok/conf.d",
+    "domain": "marathon.mesos",
+    "wait_time": 20,
+    "lock_dir": "/var/tmp",
+    "loglevel": "info",
+    "memcached": {
+        "enabled": false,
+        "discovery": {
+            "service": "memcached",
+            "group": "system",
+            "enabled": false
+        },
+        "hosts": ["localhost:11211"]
+    }
+}

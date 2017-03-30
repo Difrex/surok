@@ -5,27 +5,24 @@ import sys
 import json
 import time
 
-# Logger singleton link
-_logger_singleton = None
-
-'''
-Public Logger oblect
-==================================================
-.set_level(level) - set level messages
-    level - values 'debug', 'info', 'warning', 'error'
-    * error - write error message
-    * warning - write warning and error message
-    * info - write info, warning and error message
-    * debug - write all message
-.get_level() - get level messages
-.error(str) - write error message
-.warning(str) - write warning message
-.info(str) - write info message
-.debug(str)- write error message
-'''
-
 
 class Logger:
+
+    """ Public Logger oblect
+    ==================================================
+    .set_level(level) - set level messages
+        level - values 'debug', 'info', 'warning', 'error'
+        * error - write error message
+        * warning - write warning and error message
+        * info - write info, warning and error message
+        * debug - write all message
+    .get_level() - get level messages
+    .error(str) - write error message
+    .warning(str) - write warning message
+    .info(str) - write info message
+    .debug(str)- write error message
+    """
+    _instance = None
     _loglevel = 'info'
     _msg_level = {
         'debug': 'DEBUG',
@@ -35,10 +32,9 @@ class Logger:
     }
 
     def __new__(cls, *args):
-        global _logger_singleton
-        if _logger_singleton is None:
-            _logger_singleton = super(Logger, cls).__new__(cls)
-        return _logger_singleton
+        if cls._instance is None:
+            cls._instance = super(Logger, cls).__new__(cls)
+        return cls._instance
 
     def __init__(self, *args):
         if args:
@@ -62,7 +58,7 @@ class Logger:
                 r.append(m)
             else:
                 r.append(json.dumps(m, sort_keys=True, indent=2))
-        return '[' + str(time.time()) + '] ' + self._msg_level[level] + ': ' + ''.join(r) + "\n"
+        return "[ {0} ] {1}: {2}\n".format(str(time.time()), self._msg_level[level], ''.join(r))
 
     def debug(self, *message):
         if self.get_level() in ['debug']:
