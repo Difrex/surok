@@ -34,9 +34,9 @@
 }
 </code>
 * <strong>services</strong>. List of hashes with required services for app.
-  1. <em>name</em> - string. App name in Marathon.
+  1. <em>name</em> - string. App name in Marathon. If you use a Marathon discovery, you can use the "*" at the end of the string to indicate any character.
   2. <em>group</em> - string. App group in Marathon. Optional. Discovery policy: 1) config 2) SUROK<em>DISCOVERY</em>GROUP environment variable 3) Marathon API
-  3. <em>ports</em> - list. Name of opened port. In marathon of course. Optional.
+  3. <em>ports</em> - list. Name of opened port. In marathon of course. If you use a Marathon discovery, you can use the "*" at the end of the string to indicate any character. Optional.
 * <strong>conf<em>name</strong>. Unique app config name.
 * <strong>template</strong>. Jinja2 template location.
 * <strong>dest</strong>. Destination config path.

@@ -1,4 +1,4 @@
 dnspython
 jinja2
 requests
-python-memcached >= 1.57
+python-memcached >= 1.58

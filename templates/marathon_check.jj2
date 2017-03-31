@@ -1,0 +1,5 @@
+{% for server in my['services']['zzy0'] -%}
+Test file host 'zzy0' {{ server['name'] }}
+Test file port 'zzy0' {{ server['tcp']['tname_aa'] }}
+{% endfor -%}
+Test environment 'TEST1' {{ my.env.get('TEST1') }}

@@ -1,77 +1,19 @@
 #!/usr/bin/python3
-
 from time import sleep
-import os
-from os import listdir
-from os.path import isfile, join
-import json
 import argparse
-from surok.templates import gen
-from surok.discovery import resolve
-from surok.system import reload_conf
-
-
-# Load base configurations
-surok_conf = '/etc/surok/conf/surok.json'
+from surok.apps import Apps
+from surok.config import Config
 
 # Command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', help='surok.json path')
 args = parser.parse_args()
-if args.config:
-    surok_conf = args.config
 
-# Read config file
-f = open(surok_conf, 'r')
-conf = json.loads(f.read())
-f.close()
-
-
-# Get app configurations
-# Return list of patches to app discovery configuration
-def get_configs():
-    confs = [f for f in listdir(conf['confd']) if isfile(
-        join(conf['confd'], f))]
-    return sorted(confs)
-
-
-# Get Surok App configuration
-# Read app conf from file and return dict
-def load_app_conf(app):
-    # Load OS environment to app_conf
-    f = open(conf['confd'] + '/' + app)
-    c = json.loads(f.read())
-    f.close()
-
-    c['env'] = os.environ
-
-    return c
-
+# Load base configurations
+config = Config(args.config if args.config else '/etc/surok/conf/surok.json')
 
 # Main loop
-###########
-
+apps = Apps()
 while 1:
-    confs = get_configs()
-    for app in confs:
-        app_conf = load_app_conf(app)
-
-        # Will be removed later
-        # For old configs
-        loglevel = 'info'
-        if 'loglevel' in conf:
-            loglevel = conf['loglevel']
-
-        # Resolve services
-        app_hosts = resolve(app_conf, conf)
-
-        # Populate my dictionary
-        my = {"services": app_hosts,
-              "conf_name": app_conf['conf_name']}
-
-        # Generate config from template
-        service_conf = gen(my, app_conf['template'])
-
-        reload_conf(service_conf, app_conf, conf, app_hosts)
-
-    sleep(conf['wait_time'])
+    apps.update()
+    sleep(config['wait_time'])

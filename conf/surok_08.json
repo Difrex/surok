@@ -1,0 +1,31 @@
+{
+    "version": "0.8",
+    "marathon": {
+        "force": true,
+        "host": "http://marathon.mesos:8080",
+        "restart": false,
+        "enabled": false
+    },
+    "mesos": {
+        "domain": "marathon.mesos",
+        "enabled": false
+    },
+    "files": {
+        "path": "/var/tmp",
+        "enabled": false
+    },
+    "default_discovery": "mesos_dns",
+    "default_store": "memory",
+    "confd": "/usr/share/surok/conf.d",
+    "wait_time": 20,
+    "loglevel": "info",
+    "memcached": {
+        "discovery":{
+            "service": "memcached",
+            "group": "system",
+            "enabled": false
+        },
+        "host": "localhost:11211",
+        "enabled": false
+    }
+}

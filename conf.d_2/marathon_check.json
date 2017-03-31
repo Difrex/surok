@@ -1,0 +1,16 @@
+{
+    "services": [
+        {
+            "name": "zzy*",
+            "tcp": ["tname_a*"]
+        }
+    ],
+    "files": {
+        "/tmp/test_1": "{{ mod.template(mod.from_file('/usr/share/surok/templates/marathon_check.jj2')) }}"
+    },
+    "environments": {
+        "TEST1": "Test env host 'zzy0.tname_aa' {{ my['services']['zzy0'][0]['name'] }}"
+    },
+    "reload_cmd": "/bin/echo selfcheck TEST1=${TEST1} TEST2=${TEST2} > /tmp/test_cmd",
+    "discovery": "marathon_api"
+}

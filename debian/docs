@@ -1,3 +1,5 @@
 README.md
-doc/ru/*
+docs/*md
+docs/ru/*md
+LICENSE
 AUTHORS

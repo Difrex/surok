@@ -1,25 +1,11 @@
-# Templates
+# Шаблоны
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
-**Table of Contents**
+Шаблоны для Surok пишутся на Jinja2. Возможно, стоит прочитать документацию.
 
-- [Templates](#templates)
-    - [my dictionary in templates](#my-dictionary-in-templates)
-        - [0.8 version](#08-version)
-            - [Real template example](#real-template-example)
-            - [Checks in template](#checks-in-template)
-        - [0.7 version](#07-version)
-            - [Real template example](#real-template-example)
+## Словарь my в шаблоне
 
-<!-- markdown-toc end -->
-
-
-Surok using Jinja2 for templates. [Jinja2 documentation](http://jinja.pocoo.org/docs/dev/)
-
-## my dictionary in templates
-
-### 0.8 version
-
+### Версия 0.8
+Surok заполняет словарь my и передает его в шаблон.
 ```
 {
    "services": {
@@ -85,61 +71,61 @@ Surok using Jinja2 for templates. [Jinja2 documentation](http://jinja.pocoo.org/
 }
 ```
 
-#### Real template example
+## Пример реального шаблона
 
-nginx config
 ```
 upstream matrix-http {
     hash $remote_addr;
-{% for server in my['services']['matrix']['http'] %}
-    server {{server['name']}}:{{server['port']}} max_fails=3;
+{% for server in my['services']['matrix'] %}
+    server {{server['name']}}:{{server['tcp']['http']}} max_fails=3;
 {% endfor %}
 }
- 
+
 upstream riot-http {
     hash $remote_addr;
 {% for server in my['services']['riot'] %}
-    server {{server['name']}}:{{server['port']}} max_fails=3;
+    server {{server['name']}}:{{server['tcp'][0]}} max_fails=3;
 {% endfor %}
 }
- 
+
 server {
     listen 10.15.56.157:80;
     server_name matrix.example.com;
- 
+
     client_max_body_size 10m;
- 
+
     location / {
         proxy_pass http://riot-http;
         proxy_set_header  X-Real-IP        $remote_addr;
         proxy_set_header  Host             $http_host;
         proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
     }
- 
+
     location /_matrix/ {
         proxy_pass http://matrix-http;
         proxy_set_header  X-Real-IP        $remote_addr;
         proxy_set_header  Host             $http_host;
         proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
     }
- 
+
 }
 ```
+Так для upstream matrix-http используются именованные порты, а для riot-http – нет.
 
-#### Checks in template
+## Проверки в шаблоне
 
-_my['env']_ is a python os.environ class. Look bellow:
+Переменная _my['env']_ является классом python _os.environ_, что позваоляет нам строить различные проверки, например:
+
 ```
-{% if my['env'].get('DB_HOST') %}
+{% if my['env'].get('DB_HOST') -%}
 host = '{{my['env']['DB_HOST']}}'
-{% else %}
+{% else -%}
 host = 'localhost'
-{% endif %}
+{% endif -%}
 ```
 
-### 0.7 version 
-
-my dictionary in template
+### Версия 0.7
+Surok заполняет словарь my и передает его в шаблон.
 ```
 {
    "services": {
@@ -184,7 +170,7 @@ my dictionary in template
 }
 ```
 
-#### Real template example
+## Пример реального шаблона
 
 ```
 upstream matrix-http {
@@ -223,3 +209,17 @@ server {
 
 }
 ```
+Так для upstream matrix-http используются именованные порты, а для riot-http – нет.
+
+## Проверки в шаблоне
+
+Переменная _my['env']_ является классом python _os.environ_, что позваоляет нам строить различные проверки, например:
+
+```
+{% if my['env'].get('DB_HOST') %}
+host = '{{my['env']['DB_HOST']}}'
+{% else %}
+host = 'localhost'
+{% endif %}
+```
+

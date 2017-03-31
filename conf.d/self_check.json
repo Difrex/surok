@@ -1,0 +1,22 @@
+{
+    "services": [
+        {
+            "name": "zzy0",
+            "ports": ["tname_aa", "tname_ab", "tname_ba", "tname_bb", "tname_d"]
+        },
+        {
+            "name": "zzy1",
+            "ports": ["tname_aa", "tname_ab", "tname_ba", "tname_bb"]
+        },
+        {
+            "name": "zzz0",
+            "ports": ["tname_aa", "tname_bb"]
+        },
+        {
+            "name": "zzz1"
+        }
+    ],
+    "template": "/usr/share/surok/templates/self_check.jj2",
+    "dest": "/tmp/test_old",
+    "reload_cmd": "/bin/echo selfcheck ok"
+}
